@@ -1,0 +1,11 @@
+
+main
+dokkuapi
+
+#Logs
+*.log
+
+#Temporary tools
+deploy.sh
+build.sh
+build_deploy.sh
