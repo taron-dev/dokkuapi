@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	auth "github.com/ondro2208/dokkuapi/authentication"
+	"github.com/ondro2208/dokkuapi/controller"
 	log "github.com/ondro2208/dokkuapi/logger"
 	"net/http"
 	"os"
@@ -19,6 +20,7 @@ func main() {
 
 	router := mux.NewRouter()
 	router.Handle("/info", auth.IsAuthenticated(getInfo)).Methods("GET")
+	router.HandleFunc("/register", controller.RegisterUserEndpoint).Methods("POST")
 	loggedRouter := handlers.LoggingHandler(file, router)
 	http.ListenAndServe(":3000", loggedRouter)
 }
