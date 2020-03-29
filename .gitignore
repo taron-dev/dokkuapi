@@ -5,7 +5,8 @@ dokkuapi
 #Logs
 *.log
 
-#Temporary tools
+#Temporary scripts
 deploy.sh
 build.sh
 build_deploy.sh
+start_with_env.sh
