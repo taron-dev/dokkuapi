@@ -16,6 +16,7 @@ Don't forget to set all necessary ENVs. You can run it locally with `./start_wit
 ## Endpoints
 > `/info` temporary endpoint\
 > `/register` to register with github
+> `/login` to login with github
 
 
 ## Logging

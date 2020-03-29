@@ -20,7 +20,8 @@ func main() {
 
 	router := mux.NewRouter()
 	router.Handle("/info", auth.IsAuthenticated(getInfo)).Methods("GET")
-	router.HandleFunc("/register", controller.RegisterUserEndpoint).Methods("POST")
+	router.Handle("/register", auth.VerifyUser(controller.PostRegister)).Methods("POST")
+	router.Handle("/login", auth.VerifyUser(controller.PostLogin)).Methods("POST")
 	loggedRouter := handlers.LoggingHandler(file, router)
 	http.ListenAndServe(":3000", loggedRouter)
 }

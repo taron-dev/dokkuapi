@@ -1,24 +1,19 @@
-package controller
+package authentication
 
 import (
 	"encoding/json"
 	"errors"
 	log "github.com/ondro2208/dokkuapi/logger"
+	"github.com/ondro2208/dokkuapi/model"
 	"net/http"
 )
 
 var httpClient = &http.Client{}
 
-// GithubUser is model for github user
-type GithubUser struct {
-	Login string `json:"login,omitempty"`
-	Id    int64  `json:"id,omitempty"`
-}
-
 const githubApiBaseUrl = "https://api.github.com"
 
 // GetGithubUser fetch information about Github user
-func GetGithubUser(accessToken string) (*GithubUser, error) {
+func GetGithubUser(accessToken string) (*model.GithubUser, error) {
 	request, err := http.NewRequest("GET", githubApiBaseUrl+"/user", nil)
 	if err != nil {
 		log.ErrorLogger.Println(err)
@@ -36,7 +31,7 @@ func GetGithubUser(accessToken string) (*GithubUser, error) {
 		return nil, errors.New("Not Authorized")
 	}
 
-	var githubUser *GithubUser
+	var githubUser *model.GithubUser
 	err = json.NewDecoder(response.Body).Decode(&githubUser)
 	if err != nil {
 		log.ErrorLogger.Println(err)
