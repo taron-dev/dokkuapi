@@ -12,18 +12,6 @@ import (
 
 var mySigningKey = []byte(os.Getenv("JWT_TOKEN_SECRET"))
 
-// IsAuthenticated verifies if request is authenticated
-func IsAuthenticated(endpointHandler func(http.ResponseWriter, *http.Request)) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if hasValidToken(w, r) {
-			endpointHandler(w, r)
-		} else {
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("Not Authorized"))
-		}
-	})
-}
-
 func hasValidToken(w http.ResponseWriter, r *http.Request) bool {
 	if r.Header["Authorization"] != nil {
 		reqToken := r.Header.Get("Authorization")
