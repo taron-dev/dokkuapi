@@ -18,6 +18,7 @@ Don't forget to set all necessary ENVs. You can run it locally with `./start_wit
 > `/register` to register with github
 > `/login` to login with github
 > `/logout` to deny access to api
+> `/users/{usrId}` delete user according userId
 
 
 ## Logging

@@ -23,7 +23,7 @@ func main() {
 	router.Handle("/register", auth.VerifyUser(controller.PostRegister)).Methods("POST")
 	router.Handle("/login", auth.VerifyUser(controller.PostLogin)).Methods("POST")
 	router.Handle("/logout", auth.IsAuthenticated(controller.PostLogout)).Methods("POST")
-	// TODO - delete
+	router.Handle("/users/{userId}", auth.IsAuthenticated(controller.DeleteUser)).Methods("DELETE")
 	loggedRouter := handlers.LoggingHandler(file, router)
 	http.ListenAndServe(":3000", loggedRouter)
 }
