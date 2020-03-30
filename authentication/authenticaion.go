@@ -11,10 +11,16 @@ import (
 )
 
 var mySigningKey = []byte(os.Getenv("JWT_TOKEN_SECRET"))
+var jwtBlacklist []string
 
 func hasValidToken(w http.ResponseWriter, r *http.Request) bool {
 	if r.Header["Authorization"] != nil {
 		reqToken := r.Header.Get("Authorization")
+
+		if isBlacklisted(reqToken) {
+			return false
+		}
+
 		reqToken = strings.Split(reqToken, "Bearer ")[1]
 		token, err := jwt.Parse(reqToken, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -57,4 +63,18 @@ func GenerateJWT(userId string) (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+func AddToBlacklist(r *http.Request) {
+	reqToken := r.Header.Get("Authorization")
+	jwtBlacklist = append(jwtBlacklist, reqToken)
+}
+
+func isBlacklisted(val string) bool {
+	for _, item := range jwtBlacklist {
+		if item == val {
+			return true
+		}
+	}
+	return false
 }

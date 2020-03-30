@@ -8,12 +8,13 @@ import (
 
 // IsAuthenticated verifies if request is authenticated
 func IsAuthenticated(endpointHandler func(http.ResponseWriter, *http.Request)) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if hasValidToken(w, r) {
-			endpointHandler(w, r)
+	return http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
+		response.Header().Set("content-type", "application/json")
+		if hasValidToken(response, request) {
+			endpointHandler(response, request)
 		} else {
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("Not Authorized"))
+			response.WriteHeader(http.StatusUnauthorized)
+			response.Write([]byte("Not Authorized"))
 		}
 	})
 }
