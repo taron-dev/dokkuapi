@@ -10,3 +10,7 @@ type Application struct {
 	Name     string               `json:"appName,omitempty" bson:"appName,omitempty"`
 	Services []primitive.ObjectID `json:"services,omitempty" bson:"services,omitempty"`
 }
+
+type ApplicationPost struct {
+	Name string `json:"appName,omitempty" bson:"appName,omitempty"`
+}

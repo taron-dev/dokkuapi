@@ -1,15 +1,13 @@
 package controller
 
 import (
-	"errors"
-	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
+	auth "github.com/ondro2208/dokkuapi/authentication"
 	log "github.com/ondro2208/dokkuapi/logger"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 	"os"
-	"strings"
 )
 
 var mySigningKey = []byte(os.Getenv("JWT_TOKEN_SECRET"))
@@ -19,18 +17,7 @@ func DeleteUser(response http.ResponseWriter, request *http.Request) {
 	//TODO delete related apps
 
 	//TODO fix getting sub
-	reqToken := request.Header.Get("Authorization")
-	reqToken = strings.Split(reqToken, "Bearer ")[1]
-	token, _ := jwt.Parse(reqToken, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("Error parsing jwt")
-		}
-		return mySigningKey, nil
-	})
-
-	claims := token.Claims.(jwt.MapClaims)
-	sub := claims["sub"].(string)
-
+	sub := auth.ExtractSub(request)
 	userIdParam := mux.Vars(request)["userId"]
 	if sub == userIdParam {
 		idPrimitive, err := primitive.ObjectIDFromHex(sub)

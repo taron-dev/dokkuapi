@@ -65,6 +65,7 @@ func GenerateJWT(userId string) (string, error) {
 	return tokenString, nil
 }
 
+// AddToBlacklist blacklist jwt
 func AddToBlacklist(r *http.Request) {
 	reqToken := r.Header.Get("Authorization")
 	jwtBlacklist = append(jwtBlacklist, reqToken)
@@ -77,4 +78,19 @@ func isBlacklisted(val string) bool {
 		}
 	}
 	return false
+}
+
+// ExtractSub return sub from jwt
+func ExtractSub(request *http.Request) string {
+	reqToken := request.Header.Get("Authorization")
+	reqToken = strings.Split(reqToken, "Bearer ")[1]
+	token, _ := jwt.Parse(reqToken, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("Error parsing jwt")
+		}
+		return mySigningKey, nil
+	})
+
+	claims := token.Claims.(jwt.MapClaims)
+	return claims["sub"].(string)
 }
