@@ -1,9 +1,15 @@
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
+github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 h1:sDMmm+q/3+BukdIpxwO365v/Rbspp2Nt5XntgQRXq8Q=
+github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0/go.mod h1:4Zcjuz89kmFXt9morQgcfYZAYZ5n8WHjt81YYWIwtTM=
+github.com/codeskyblue/go-sh v0.0.0-20190412065543-76bd3d59ff27 h1:HHUr4P/aKh4quafGxDT9LDasjGdlGkzLbfmmrlng3kA=
+github.com/codeskyblue/go-sh v0.0.0-20190412065543-76bd3d59ff27/go.mod h1:VQx0hjo2oUeQkQUET7wRwradO6f+fN5jzXgB/zROxxE=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dgrijalva/jwt-go v1.0.2 h1:KPldsxuKGsS2FPWsNeg9ZO18aCrGKujPoWXn2yo+KQM=
 github.com/dgrijalva/jwt-go v3.2.0+incompatible h1:7qlOGliEKZXTDg6OTjfoBKDXWrumCAMpl/TFQ4/5kLM=
 github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
+github.com/dokku/dokku v0.20.0 h1:uZKGm2ulkl1vQvXNkQH+Sj+UjWpLk2FcWpqcBMTNFBw=
+github.com/dokku/dokku v0.20.0/go.mod h1:1ZyZbgNahwtPoIeWpzVYxb3vHDO4WxIgOt9/3OYyzjs=
 github.com/go-stack/stack v1.8.0 h1:5SgMzNM5HxrEjV0ww2lTmX6E2Izsfxas4+YHWRs3Lsk=
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
 github.com/gobuffalo/attrs v0.0.0-20190224210810-a9411de4debd/go.mod h1:4duuawTqi2wkkpB4ePgWMaai6/Kc6WEz83bhFwpHzj0=
