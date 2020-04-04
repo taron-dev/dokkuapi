@@ -13,11 +13,11 @@ import (
 var mySigningKey = []byte(os.Getenv("JWT_TOKEN_SECRET"))
 var jwtBlacklist []string
 
-func hasValidToken(w http.ResponseWriter, r *http.Request) bool {
+func HasValidToken(w http.ResponseWriter, r *http.Request, blackList []string) bool {
 	if r.Header["Authorization"] != nil {
 		reqToken := r.Header.Get("Authorization")
 
-		if isBlacklisted(reqToken) {
+		if isBlacklisted(reqToken, blackList) {
 			return false
 		}
 
@@ -66,13 +66,13 @@ func GenerateJWT(userId string) (string, error) {
 }
 
 // AddToBlacklist blacklist jwt
-func AddToBlacklist(r *http.Request) {
-	reqToken := r.Header.Get("Authorization")
-	jwtBlacklist = append(jwtBlacklist, reqToken)
-}
+// func AddToBlacklist(r *http.Request) {
+// 	reqToken := r.Header.Get("Authorization")
+// 	jwtBlacklist = append(jwtBlacklist, reqToken)
+// }
 
-func isBlacklisted(val string) bool {
-	for _, item := range jwtBlacklist {
+func isBlacklisted(val string, blackList []string) bool {
+	for _, item := range blackList {
 		if item == val {
 			return true
 		}
@@ -81,16 +81,16 @@ func isBlacklisted(val string) bool {
 }
 
 // ExtractSub return sub from jwt
-func ExtractSub(request *http.Request) string {
-	reqToken := request.Header.Get("Authorization")
-	reqToken = strings.Split(reqToken, "Bearer ")[1]
-	token, _ := jwt.Parse(reqToken, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("Error parsing jwt")
-		}
-		return mySigningKey, nil
-	})
+// func ExtractSub(request *http.Request) string {
+// 	reqToken := request.Header.Get("Authorization")
+// 	reqToken = strings.Split(reqToken, "Bearer ")[1]
+// 	token, _ := jwt.Parse(reqToken, func(token *jwt.Token) (interface{}, error) {
+// 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+// 			return nil, errors.New("Error parsing jwt")
+// 		}
+// 		return mySigningKey, nil
+// 	})
 
-	claims := token.Claims.(jwt.MapClaims)
-	return claims["sub"].(string)
-}
+// 	claims := token.Claims.(jwt.MapClaims)
+// 	return claims["sub"].(string)
+// }

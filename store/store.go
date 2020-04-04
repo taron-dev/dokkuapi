@@ -1,4 +1,4 @@
-package controller
+package store
 
 import (
 	"context"
@@ -9,13 +9,14 @@ import (
 	"time"
 )
 
-// Client represents mongodb client
-var client *mongo.Client = initializeDatabase()
-
 const dbName = "dokkuapi"
 
-// InitializeDatabase setup connection do dokkuapi database
-func initializeDatabase() *mongo.Client {
+type Store struct {
+	Client *mongo.Client
+	DbName string
+}
+
+func NewStore() (*Store, error) {
 	username := os.Getenv("DB_USERNAME")
 	pwd := os.Getenv("DB_PWD")
 	dbUri := os.Getenv("DB_URI")
@@ -34,12 +35,10 @@ func initializeDatabase() *mongo.Client {
 	if err != nil {
 		log.ErrorLogger.Fatal("Could not connect to MongoDB:", err)
 	}
-	return client
-}
 
-// GetCollection provide collection and context according input parameter
-func GetCollection(collectionName string) (*mongo.Collection, context.Context) {
-	collection := client.Database(dbName).Collection("users")
-	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
-	return collection, ctx
+	str := new(Store)
+	str.Client = client
+	str.DbName = dbName
+
+	return str, nil //&Store{Client: client, DbName: dbName}, nil
 }

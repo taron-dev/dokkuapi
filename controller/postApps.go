@@ -47,7 +47,7 @@ func PostApps(response http.ResponseWriter, request *http.Request) {
 	log.GeneralLogger.Println("Application ", appName, " created successfully")
 
 	// load user according jwt
-	users, ctx := GetCollection("users")
+	users, ctx := GetCollection1("users")
 	var user model.User
 	err = users.FindOne(ctx, model.User{Id: userId}).Decode(&user)
 	if err != nil {
