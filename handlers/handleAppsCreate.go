@@ -50,6 +50,7 @@ func AppsCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
 		err, _, _ := plugins.DestroyApp(appName)
 		log.ErrorLogger.Println("Destroying already created app was successfull: ", err == nil)
 		helper.RespondWithMessage(w, r, status, message)
+		return
 	}
 	helper.RespondWithData(w, r, status, &app)
 }

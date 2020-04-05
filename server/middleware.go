@@ -8,7 +8,7 @@ import (
 )
 
 // IsAuthenticated verifies if request is authenticated
-func (s *Server) IsAuthenticated(endpointHandler http.HandlerFunc) http.Handler {
+func (s *Server) isAuthenticated(endpointHandler http.HandlerFunc) http.Handler {
 	return http.HandlerFunc(
 		func(response http.ResponseWriter, request *http.Request) {
 			response.Header().Set("content-type", "application/json")

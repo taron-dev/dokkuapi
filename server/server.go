@@ -22,10 +22,6 @@ func NewServer(store *str.Store) *Server {
 	return newServer
 }
 
-// func (s *Server) ServeHttp(w http.ResponseWriter, r *http.Request) {
-// 	s.router.ServeHTTP(w, r)
-// }
-
 // Start api webserver
 func (s *Server) Start() {
 	http.ListenAndServe(":3000", s.router)

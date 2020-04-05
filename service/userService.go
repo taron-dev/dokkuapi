@@ -20,6 +20,7 @@ type UsersService interface {
 	GetExistingUserById(userIdHex string) (*model.User, int, string)
 	DeleteExistingUser(userIdHex string) error
 	UpdateUserWithApplication(appName string, userId primitive.ObjectID) (*model.Application, int, string)
+	DeleteUserApplication(userId primitive.ObjectID, appId primitive.ObjectID) (int, string, bool)
 }
 
 func NewUsersService(serviceStore *str.Store) UsersService {
@@ -126,4 +127,26 @@ func (us *UsersServiceContext) UpdateUserWithApplication(appName string, userId 
 	}
 
 	return &newApp, http.StatusCreated, "Application successfully created"
+}
+
+func (us *UsersServiceContext) DeleteUserApplication(userId primitive.ObjectID, appId primitive.ObjectID) (int, string, bool) {
+	users, ctx := getCollection(us.store.Client, us.store.DbName, "users")
+	result, err := users.UpdateOne(
+		ctx,
+		bson.M{"_id": userId},
+		bson.D{
+			{"$pull", bson.M{"applications": bson.M{"_id": appId}}},
+		},
+	)
+	log.GeneralLogger.Println("Result after updating database ", result)
+	if err != nil {
+		log.ErrorLogger.Println(err)
+		return http.StatusUnprocessableEntity, "Can't delete application", true
+	}
+
+	if result.MatchedCount == 0 {
+		return http.StatusInternalServerError, "No application deleted", false
+	}
+
+	return http.StatusAccepted, "Application deleted successfully", false
 }
