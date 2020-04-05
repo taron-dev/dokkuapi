@@ -14,7 +14,7 @@ func (s *Server) IsAuthenticated(endpointHandler http.HandlerFunc) http.Handler 
 			response.Header().Set("content-type", "application/json")
 			if auth.HasValidToken(response, request, s.blackList) {
 				// database usage for user id ??? TODO
-				contextimpl.DecorateWithSub(request)
+				request = contextimpl.DecorateWithSub(request)
 				endpointHandler(response, request)
 			} else {
 				response.WriteHeader(http.StatusUnauthorized)
@@ -26,7 +26,6 @@ func (s *Server) IsAuthenticated(endpointHandler http.HandlerFunc) http.Handler 
 // VerifyUser handles user with access token
 func (s *Server) verifyUser(endpointHandler func(http.ResponseWriter, *http.Request)) http.Handler {
 	return http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
-		//response.Header().Set("content-type", "application/json")
 		accessToken := request.Header.Get("Authorization")
 		accessToken = strings.Split(accessToken, "Bearer ")[1]
 		githubUser, err := auth.GetGithubUser(accessToken)
@@ -36,7 +35,7 @@ func (s *Server) verifyUser(endpointHandler func(http.ResponseWriter, *http.Requ
 			return
 		}
 		// database usage for github user id ??? TODO
-		request = contextimpl.DecorateWithGithubUser(request, *githubUser)
+		request = contextimpl.DecorateWithGithubUser(request, githubUser)
 		endpointHandler(response, request)
 	})
 }

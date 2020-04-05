@@ -66,10 +66,10 @@ func GenerateJWT(userId string) (string, error) {
 }
 
 // AddToBlacklist blacklist jwt
-// func AddToBlacklist(r *http.Request) {
-// 	reqToken := r.Header.Get("Authorization")
-// 	jwtBlacklist = append(jwtBlacklist, reqToken)
-// }
+func AddToBlacklist(r *http.Request, blackList *[]string) {
+	reqToken := r.Header.Get("Authorization")
+	*blackList = append(*blackList, reqToken)
+}
 
 func isBlacklisted(val string, blackList []string) bool {
 	for _, item := range blackList {

@@ -6,7 +6,7 @@ import (
 )
 
 func RespondWithData(w http.ResponseWriter, r *http.Request, status int, data interface{}) {
-	w.Header().Set("content-type", "application/json")
+	w.Header().Add("content-type", "application/json")
 	w.WriteHeader(status)
 	if data != nil {
 		err := json.NewEncoder(w).Encode(data)
@@ -17,7 +17,7 @@ func RespondWithData(w http.ResponseWriter, r *http.Request, status int, data in
 }
 
 func RespondWithMessage(w http.ResponseWriter, r *http.Request, status int, message string) {
-	w.Header().Set("content-type", "application/json")
+	w.Header().Add("content-type", "application/json")
 	w.WriteHeader(status)
 	jsonData, err := json.Marshal(map[string]string{"message": message})
 	if err != nil {
@@ -25,4 +25,8 @@ func RespondWithMessage(w http.ResponseWriter, r *http.Request, status int, mess
 	}
 	w.Write(jsonData)
 
+}
+
+func Decode(w http.ResponseWriter, r *http.Request, v interface{}) error {
+	return json.NewDecoder(r.Body).Decode(v)
 }

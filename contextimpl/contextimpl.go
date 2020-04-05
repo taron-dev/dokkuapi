@@ -3,7 +3,6 @@ package contextimpl
 import (
 	"context"
 	"errors"
-	"fmt"
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/ondro2208/dokkuapi/model"
 	"net/http"
@@ -44,19 +43,17 @@ func GetSub(ctx context.Context) (string, error) {
 	return sub, nil
 }
 
-// DecorateWithGithubUser decorate request with github user id
-func DecorateWithGithubUser(r *http.Request, githubUser model.GithubUser) *http.Request {
+// DecorateWithGithubUser decorate request with github user
+func DecorateWithGithubUser(r *http.Request, githubUser *model.GithubUser) *http.Request {
 	ctx := context.WithValue(r.Context(), requestGithubUserKey, githubUser)
 	return r.WithContext(ctx)
 }
 
-// GetGithubUserID returns github user id from request's context
-func GetGithubUser(ctx context.Context) (model.GithubUser, error) {
-	githubUser, ok := ctx.Value(requestGithubUserKey).(model.GithubUser)
-	//TODO
-	fmt.Println("GITHUBUSER: ", githubUser)
+// GetGithubUser returns github user from request's context
+func GetGithubUser(ctx context.Context) (*model.GithubUser, error) {
+	githubUser, ok := ctx.Value(requestGithubUserKey).(*model.GithubUser)
 	if !ok {
-		//return nil, errors.New("Can't find github user id in context")
+		return nil, errors.New("Can't find github user id in context")
 	}
 	return githubUser, nil
 }
