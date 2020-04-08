@@ -12,7 +12,7 @@ func PostLogin(response http.ResponseWriter, request *http.Request) {
 	githubUser := request.Context().Value("githubUser").(model.GithubUser)
 	var user model.User
 
-	users, ctx := GetCollection("users")
+	users, ctx := GetCollection1("users")
 	err := users.FindOne(ctx, model.User{GithubId: githubUser.Id}).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
