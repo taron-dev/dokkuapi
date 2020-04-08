@@ -9,6 +9,7 @@ import (
 	"net/http"
 )
 
+// UserDelete delete authorized user from db
 func UserDelete(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	//TODO delete related services
 	//TODO delete related apps
@@ -16,10 +17,10 @@ func UserDelete(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	if err != nil {
 		helper.RespondWithMessage(w, r, http.StatusInternalServerError, err.Error())
 	}
-	userIdParam := mux.Vars(r)["userId"]
-	if sub == userIdParam {
+	userIDParam := mux.Vars(r)["userId"]
+	if sub == userIDParam {
 		usersService := service.NewUsersService(store)
-		err := usersService.DeleteExistingUser(userIdParam)
+		err := usersService.DeleteExistingUser(userIDParam)
 		if err != nil {
 			helper.RespondWithMessage(w, r, http.StatusInternalServerError, "User not deleted")
 		} else {

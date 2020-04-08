@@ -40,5 +40,5 @@ func NewStore() (*Store, error) {
 	str.Client = client
 	str.DbName = dbName
 
-	return str, nil //&Store{Client: client, DbName: dbName}, nil
+	return str, nil
 }

@@ -5,21 +5,23 @@ import (
 	log "github.com/ondro2208/dokkuapi/logger"
 )
 
-func CreateApp(appName string) (error, int, string) {
+// CreateApp : dokku apps:create appName
+func CreateApp(appName string) (int, string, error) {
 	err := apps.CommandCreate([]string{appName})
 	if err != nil {
 		log.ErrorLogger.Println(err)
-		return err, 422, "Can't create app"
+		return 422, "Can't create app", err
 	}
 
-	return nil, 201, ""
+	return 201, "", nil
 }
 
-func DestroyApp(appName string) (error, int, string) {
+// DestroyApp : dokku apps:destroy appName
+func DestroyApp(appName string) (int, string, error) {
 	err := apps.CommandDestroy([]string{appName, "force"})
 	if err != nil {
 		log.ErrorLogger.Println(err)
-		return err, 422, "Can't destory app"
+		return 422, "Can't destory app", err
 	}
-	return nil, 200, ""
+	return 200, "", nil
 }

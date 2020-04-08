@@ -11,6 +11,7 @@ type Application struct {
 	Services []primitive.ObjectID `json:"services,omitempty" bson:"services,omitempty"`
 }
 
+// ApplicationPost represents expected body for POST request on /apps endpoint
 type ApplicationPost struct {
 	Name string `json:"appName,omitempty" bson:"appName,omitempty"`
 }

@@ -4,8 +4,6 @@ import (
 	log "github.com/ondro2208/dokkuapi/logger"
 	"github.com/ondro2208/dokkuapi/server"
 	str "github.com/ondro2208/dokkuapi/store"
-	//"net/http"
-	//"os"
 )
 
 func main() {

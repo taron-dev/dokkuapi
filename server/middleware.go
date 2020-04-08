@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// IsAuthenticated verifies if request is authenticated
+// isAuthenticated verifies if request is authenticated
 func (s *Server) isAuthenticated(endpointHandler http.HandlerFunc) http.Handler {
 	return http.HandlerFunc(
 		func(response http.ResponseWriter, request *http.Request) {
@@ -23,7 +23,7 @@ func (s *Server) isAuthenticated(endpointHandler http.HandlerFunc) http.Handler 
 		})
 }
 
-// VerifyUser handles user with access token
+// verifyUser handles user with access token
 func (s *Server) verifyUser(endpointHandler func(http.ResponseWriter, *http.Request)) http.Handler {
 	return http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
 		accessToken := request.Header.Get("Authorization")

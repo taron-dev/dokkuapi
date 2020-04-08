@@ -13,6 +13,7 @@ import (
 var mySigningKey = []byte(os.Getenv("JWT_TOKEN_SECRET"))
 var jwtBlacklist []string
 
+// HasValidToken validate if jwt in request is valid
 func HasValidToken(w http.ResponseWriter, r *http.Request, blackList []string) bool {
 	if r.Header["Authorization"] != nil {
 		reqToken := r.Header.Get("Authorization")
@@ -46,13 +47,13 @@ func HasValidToken(w http.ResponseWriter, r *http.Request, blackList []string) b
 }
 
 // GenerateJWT with userId included
-func GenerateJWT(userId string) (string, error) {
+func GenerateJWT(userID string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	token.Claims = jwt.MapClaims{
 		"exp": time.Now().Add(time.Minute * 30).Unix(),
 		"iat": time.Now().Unix(),
-		"sub": userId,
+		"sub": userID,
 	}
 
 	tokenString, err := token.SignedString(mySigningKey)
@@ -79,18 +80,3 @@ func isBlacklisted(val string, blackList []string) bool {
 	}
 	return false
 }
-
-// ExtractSub return sub from jwt
-// func ExtractSub(request *http.Request) string {
-// 	reqToken := request.Header.Get("Authorization")
-// 	reqToken = strings.Split(reqToken, "Bearer ")[1]
-// 	token, _ := jwt.Parse(reqToken, func(token *jwt.Token) (interface{}, error) {
-// 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-// 			return nil, errors.New("Error parsing jwt")
-// 		}
-// 		return mySigningKey, nil
-// 	})
-
-// 	claims := token.Claims.(jwt.MapClaims)
-// 	return claims["sub"].(string)
-// }

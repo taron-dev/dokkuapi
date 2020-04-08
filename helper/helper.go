@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+// RespondWithData unify response format with data included
 func RespondWithData(w http.ResponseWriter, r *http.Request, status int, data interface{}) {
 	w.Header().Add("content-type", "application/json")
 	w.WriteHeader(status)
@@ -16,6 +17,7 @@ func RespondWithData(w http.ResponseWriter, r *http.Request, status int, data in
 	}
 }
 
+// RespondWithMessage unify response format with message instead of data
 func RespondWithMessage(w http.ResponseWriter, r *http.Request, status int, message string) {
 	w.Header().Add("content-type", "application/json")
 	w.WriteHeader(status)
@@ -27,6 +29,7 @@ func RespondWithMessage(w http.ResponseWriter, r *http.Request, status int, mess
 
 }
 
-func Decode(w http.ResponseWriter, r *http.Request, v interface{}) error {
-	return json.NewDecoder(r.Body).Decode(v)
+// Decode body from request into object
+func Decode(w http.ResponseWriter, r *http.Request, object interface{}) error {
+	return json.NewDecoder(r.Body).Decode(object)
 }

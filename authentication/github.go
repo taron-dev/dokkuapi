@@ -10,11 +10,11 @@ import (
 
 var httpClient = &http.Client{}
 
-const githubApiBaseUrl = "https://api.github.com"
+const githubAPIBaseURL = "https://api.github.com"
 
 // GetGithubUser fetch information about Github user
 func GetGithubUser(accessToken string) (*model.GithubUser, error) {
-	request, err := http.NewRequest("GET", githubApiBaseUrl+"/user", nil)
+	request, err := http.NewRequest("GET", githubAPIBaseURL+"/user", nil)
 	if err != nil {
 		log.ErrorLogger.Println(err)
 		return nil, err

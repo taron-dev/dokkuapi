@@ -20,11 +20,3 @@ func (s *Server) postLogout(w http.ResponseWriter, r *http.Request) {
 func (s *Server) deleteUser(w http.ResponseWriter, r *http.Request) {
 	handlers.UserDelete(w, r, s.store)
 }
-
-func (s *Server) postApps(w http.ResponseWriter, r *http.Request) {
-	handlers.AppsCreate(w, r, s.store)
-}
-
-func (s *Server) deleteApp(w http.ResponseWriter, r *http.Request) {
-	handlers.AppsCreate(w, r, s.store)
-}

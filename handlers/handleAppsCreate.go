@@ -11,6 +11,7 @@ import (
 	"net/http"
 )
 
+// AppsCreate creates application for user, configured by request body
 func AppsCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	sub, err := contextimpl.GetSub(r.Context())
 	if err != nil {
@@ -36,7 +37,7 @@ func AppsCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
 
 	// TODO creating backing services
 	// dokku apps:create
-	err, code, m := plugins.CreateApp(appName)
+	code, m, err := plugins.CreateApp(appName)
 	if err != nil {
 		log.ErrorLogger.Println(err)
 		helper.RespondWithMessage(w, r, code, m)
@@ -47,7 +48,7 @@ func AppsCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	// TODO add backing services
 	app, status, message := usersService.UpdateUserWithApplication(appName, user.Id)
 	if app == nil {
-		err, _, _ := plugins.DestroyApp(appName)
+		_, _, err := plugins.DestroyApp(appName)
 		log.ErrorLogger.Println("Destroying already created app was successfull: ", err == nil)
 		helper.RespondWithMessage(w, r, status, message)
 		return

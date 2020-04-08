@@ -12,7 +12,6 @@ type Service struct {
 }
 
 // type ServiceType string
-
 // const (
 // 	REDIS    ServiceType = "REDIS"
 // 	POSTGRES ServiceType = "POSTGRES"
