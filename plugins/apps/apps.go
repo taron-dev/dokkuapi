@@ -1,13 +1,13 @@
-package plugins
+package apps
 
 import (
-	"github.com/dokku/dokku/plugins/apps"
+	dApps "github.com/dokku/dokku/plugins/apps"
 	log "github.com/ondro2208/dokkuapi/logger"
 )
 
 // CreateApp : dokku apps:create appName
 func CreateApp(appName string) (int, string, error) {
-	err := apps.CommandCreate([]string{appName})
+	err := dApps.CommandCreate([]string{appName})
 	if err != nil {
 		log.ErrorLogger.Println(err)
 		return 422, "Can't create app", err
@@ -18,7 +18,7 @@ func CreateApp(appName string) (int, string, error) {
 
 // DestroyApp : dokku apps:destroy appName
 func DestroyApp(appName string) (int, string, error) {
-	err := apps.CommandDestroy([]string{appName, "force"})
+	err := dApps.CommandDestroy([]string{appName, "force"})
 	if err != nil {
 		log.ErrorLogger.Println(err)
 		return 422, "Can't destory app", err

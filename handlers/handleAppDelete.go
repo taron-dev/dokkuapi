@@ -5,7 +5,7 @@ import (
 	"github.com/ondro2208/dokkuapi/contextimpl"
 	"github.com/ondro2208/dokkuapi/helper"
 	log "github.com/ondro2208/dokkuapi/logger"
-	"github.com/ondro2208/dokkuapi/plugins"
+	"github.com/ondro2208/dokkuapi/plugins/apps"
 	"github.com/ondro2208/dokkuapi/service"
 	str "github.com/ondro2208/dokkuapi/store"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -53,7 +53,7 @@ func AppDelete(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	log.GeneralLogger.Println("Founded user in database ", user.Username, " with application ", appName)
 	//TODO backing services
 	// dokku apps:destory
-	code, m, err := plugins.DestroyApp(appName)
+	code, m, err := apps.DestroyApp(appName)
 	if err != nil {
 		log.ErrorLogger.Println(err)
 		helper.RespondWithMessage(w, r, code, m)
@@ -63,7 +63,7 @@ func AppDelete(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	if requireRecreate {
 		log.ErrorLogger.Println(err)
 		// destroy created app
-		_, _, err := plugins.CreateApp(appName)
+		_, _, err := apps.CreateApp(appName)
 		log.ErrorLogger.Println("Creating already destroyed app was successful ", err == nil)
 		helper.RespondWithMessage(w, r, status, message)
 		return

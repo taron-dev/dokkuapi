@@ -5,7 +5,7 @@ import (
 	"github.com/ondro2208/dokkuapi/helper"
 	log "github.com/ondro2208/dokkuapi/logger"
 	"github.com/ondro2208/dokkuapi/model"
-	"github.com/ondro2208/dokkuapi/plugins"
+	"github.com/ondro2208/dokkuapi/plugins/apps"
 	"github.com/ondro2208/dokkuapi/service"
 	str "github.com/ondro2208/dokkuapi/store"
 	"net/http"
@@ -37,7 +37,7 @@ func AppsCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
 
 	// TODO creating backing services
 	// dokku apps:create
-	code, m, err := plugins.CreateApp(appName)
+	code, m, err := apps.CreateApp(appName)
 	if err != nil {
 		log.ErrorLogger.Println(err)
 		helper.RespondWithMessage(w, r, code, m)
@@ -48,7 +48,7 @@ func AppsCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	// TODO add backing services
 	app, status, message := usersService.UpdateUserWithApplication(appName, user.Id)
 	if app == nil {
-		_, _, err := plugins.DestroyApp(appName)
+		_, _, err := apps.DestroyApp(appName)
 		log.ErrorLogger.Println("Destroying already created app was successfull: ", err == nil)
 		helper.RespondWithMessage(w, r, status, message)
 		return
