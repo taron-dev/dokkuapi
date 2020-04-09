@@ -5,6 +5,13 @@ import (
 	"net/http"
 )
 
+// Response serves to unify inner method return value
+type Response struct {
+	Value   interface{}
+	Status  int
+	Message string
+}
+
 // RespondWithData unify response format with data included
 func RespondWithData(w http.ResponseWriter, r *http.Request, status int, data interface{}) {
 	w.Header().Add("content-type", "application/json")

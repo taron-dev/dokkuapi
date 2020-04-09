@@ -20,6 +20,7 @@ type UsersService interface {
 	GetExistingUserById(userIdHex string) (*model.User, int, string)
 	DeleteExistingUser(userIdHex string) error
 	UpdateUserWithApplication(appName string, userId primitive.ObjectID) (*model.Application, int, string)
+	SetUserApplicationServices(newApp model.Application, userId primitive.ObjectID) (*model.Application, int, string)
 	DeleteUserApplication(userId primitive.ObjectID, appId primitive.ObjectID) (int, string, bool)
 }
 
@@ -32,7 +33,7 @@ type UsersServiceContext struct {
 }
 
 func getCollection(client *mongo.Client, dbName string, collectionName string) (*mongo.Collection, context.Context) {
-	collection := client.Database(dbName).Collection("users")
+	collection := client.Database(dbName).Collection(collectionName)
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	return collection, ctx
 }
@@ -61,10 +62,11 @@ func (us *UsersServiceContext) GetExistingUser(githubUser *model.GithubUser) (*m
 		if err == mongo.ErrNoDocuments {
 			return nil, http.StatusNotFound, "User doesn't exist"
 		}
+		log.ErrorLogger.Println("Can't find existing user")
 		return nil, http.StatusInternalServerError, err.Error()
-	} else {
-		return user, http.StatusCreated, "User is successfully logged in"
 	}
+	return user, http.StatusCreated, "User is successfully logged in"
+
 }
 
 func (us *UsersServiceContext) GetExistingUserById(userIdHex string) (*model.User, int, string) {
@@ -127,6 +129,28 @@ func (us *UsersServiceContext) UpdateUserWithApplication(appName string, userId 
 	}
 
 	return &newApp, http.StatusCreated, "Application successfully created"
+}
+
+func (us *UsersServiceContext) SetUserApplicationServices(newApp model.Application, userId primitive.ObjectID) (*model.Application, int, string) {
+	users, ctx := getCollection(us.store.Client, us.store.DbName, "users")
+	result, err := users.UpdateOne(
+		ctx,
+		bson.M{"_id": userId, "applications._id": newApp.Id},
+		bson.D{
+			{"$set", bson.M{"applications.$.services": newApp.Services}},
+		},
+	)
+	log.GeneralLogger.Println("Result after updating database ", result)
+	if err != nil {
+		log.ErrorLogger.Println(err)
+		return nil, http.StatusUnprocessableEntity, "Unable to store services"
+	}
+
+	if result.MatchedCount == 0 {
+		return nil, http.StatusInternalServerError, "No app updated"
+	}
+
+	return &newApp, http.StatusCreated, "Application successfully updated"
 }
 
 func (us *UsersServiceContext) DeleteUserApplication(userId primitive.ObjectID, appId primitive.ObjectID) (int, string, bool) {
