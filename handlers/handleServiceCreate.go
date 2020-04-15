@@ -66,10 +66,10 @@ func ServiceCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
 		return
 	}
 
-	// TODO link service to api in dokku
-	ok := postgres.LinkServiceToApp(newService.Name, app.Name)
-	if !ok {
-		helper.RespondWithMessage(w, r, http.StatusInternalServerError, "nefunguje link")
+	err = postgres.LinkServiceToApp(newService.Name, app.Name)
+	if err != nil {
+		helper.RespondWithMessage(w, r, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	// update app services list

@@ -3,20 +3,17 @@ package postgres
 import (
 	"errors"
 	"fmt"
-	common "github.com/dokku/dokku/plugins/common"
+	"github.com/dokku/dokku/plugins/config"
 	log "github.com/ondro2208/dokkuapi/logger"
 	"io/ioutil"
 	"os"
-	"regexp"
-	"strings"
 )
 
-// SupportedVersions represents allowed postgres versions
-var SupportedVersions []string = []string{"11.6"}
+const postgres = "postgres"
 
 var postgresRoot = os.Getenv("POSTGRES_ROOT")
-
-const postgres = "postgres"
+var postgresPort = os.Getenv("POSTGRES_DATASTORE_PORT")
+var dokkuRoot = os.Getenv("DOKKU_ROOT")
 
 // Create create postgres service
 func Create(serviceName string, serviceVersion string) (int, string, error) {
@@ -71,8 +68,6 @@ func Create(serviceName string, serviceVersion string) (int, string, error) {
 		return 500, "Can't create /DATABASE_NAME file ", err
 	}
 
-	//TODO service name pwd etc
-	// TODO databaseName
 	databaseName := serviceName
 	log.GeneralLogger.Println("Database name", databaseName)
 	serviceName = "dokku.postgres." + serviceName
@@ -120,143 +115,24 @@ func Create(serviceName string, serviceVersion string) (int, string, error) {
 	return 201, "Service created successfully", nil
 }
 
-func stopService(serviceName string) bool {
-	imageCmd := common.NewShellCmd(strings.Join([]string{"docker", "stop", serviceName}, " "))
-	imageCmd.ShowOutput = false
-	return imageCmd.Execute()
-}
-
-func secureDbConnection(serviceHostRoot string, serviceImage string, serviceVersion string) bool {
-	serviceRootBinding := fmt.Sprintf("%v/data:/var/lib/postgresql/data", serviceHostRoot)
-	imageLabel := fmt.Sprintf("%v:%v", serviceImage, serviceVersion)
-	cmd := []string{
-		"docker", "run", "--rm", "-i", "-v", serviceRootBinding, imageLabel,
-		"bash", "-s", "</var/lib/dokku/plugins/available/postgres/scripts/enable_ssl.sh"}
-	secureCmd := common.NewShellCmd(strings.Join(cmd, " "))
-	secureCmd.ShowOutput = false
-	return secureCmd.Execute()
-}
-
-func startPrevious(serviceRoot string, serviceName string) bool {
-	nameFilter := fmt.Sprintf("name=^/%v$", serviceName)
-	args := []string{
-		"docker", "ps", "-aq", "--no-trunc",
-		"--filter", "status=exited",
-		"--filter", nameFilter,
-		"--format", "{{.ID}}"}
-	cmd := common.NewShellCmd(strings.Join(args, " "))
-	cmd.ShowOutput = false
-	out, err := cmd.Output()
-	if err != nil {
-		log.ErrorLogger.Println("Get container ID fail:", err.Error())
-		return false
-	}
-	previousId := strings.TrimSpace(string(out))
-	log.GeneralLogger.Println("previous ID:", previousId)
-
-	dockerStartPreviousCmd := common.NewShellCmd(strings.Join([]string{
-		"docker", "start", previousId}, " "))
-	ok := dockerStartPreviousCmd.Execute()
-	if !ok {
-		log.ErrorLogger.Println("docker start", previousId, "FAIL")
-		return false
-	}
-	log.GeneralLogger.Println("Docker start successfull")
-	//TODO service_port_unpause
-	return true
-
-}
-
-func isValidServiceName(serviceName string) bool {
-	r, _ := regexp.Compile("^[a-z0-9][^:A-Z]*$")
-	if r.MatchString(serviceName) {
-		return true
-	}
-	return false
-}
-
-func imageExists(imageName string, imageVersion string) bool {
-	//docker images -q postgres:11.6
-	imageString := strings.Join([]string{imageName, imageVersion}, ":")
-	imageCmd := common.NewShellCmd(strings.Join([]string{"docker", "images", "-q", imageString}, " "))
-	imageCmd.ShowOutput = false
-	return imageCmd.Execute()
-}
-
-func pullImage(imageName string, imageVersion string) bool {
-	imageString := strings.Join([]string{imageName, imageVersion}, ":")
-	imageCmd := common.NewShellCmd(strings.Join([]string{"docker", "pull", imageString}, " "))
-	imageCmd.ShowOutput = false
-	return imageCmd.Execute()
-}
-
-func generatePassword() ([]byte, error) {
-	imageCmd := common.NewShellCmd(strings.Join([]string{"openssl", "rand", "-hex", "16"}, " "))
-	imageCmd.ShowOutput = false
-	out, err := imageCmd.Output()
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func writeID(serviceRoot string, serviceName string, serviceVersion string, newPwd string) error {
-	bindVolume := fmt.Sprintf("%v/data:/var/lib/postgresql/data", serviceRoot)
-	postgresPwd := fmt.Sprintf("POSTGRES_PASSWORD=%v", newPwd)
-	envFile := fmt.Sprintf("--env-file=%v/ENV", serviceRoot)
-	containerMetadata := fmt.Sprintf("%v:%v", postgres, serviceVersion)
-	cmd := []string{"docker", "run",
-		"--name", serviceName,
-		"-v", bindVolume,
-		"-e", postgresPwd,
-		envFile,
-		"-d", "--restart", "always",
-		"--label", "dokku=service",
-		"--label", "dokku.service=postgres", containerMetadata}
-
-	idCmd := common.NewShellCmd(strings.Join(cmd, " "))
-	idCmd.ShowOutput = false
-	out, err := idCmd.Output()
+// LinkServiceToApp link service to app
+func LinkServiceToApp(serviceName string, appName string) error {
+	serviceURL, err := getServiceUrl(serviceName)
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(serviceRoot+"/ID", out, 0640)
+	if isAlreadyLinked(appName, serviceURL) {
+		return errors.New("Is already linked")
+	}
+	linksFilePath := fmt.Sprintf("%v/%v/LINKS", postgresRoot, serviceName)
+	err = appendToFile(linksFilePath, appName)
 	if err != nil {
-		log.ErrorLogger.Println(err)
 		return err
 	}
-
-	return nil
-}
-
-func dockerLink(serviceName string) bool {
-	serviceNameLink := fmt.Sprintf("%v:%v", serviceName, postgres)
-	cmd := []string{
-		"docker", "run", "--rm", "--link",
-		serviceNameLink, os.Getenv("PLUGIN_WAIT_IMAGE"),
-		"-p", os.Getenv("PLUGIN_DATASTORE_WAIT_PORT")}
-	linkCmd := common.NewShellCmd(strings.Join(cmd, " "))
-	linkCmd.ShowOutput = false
-	return linkCmd.Execute()
-}
-
-func createDatabase(serviceName string, dbName string) bool {
-	//docker exec "$SERVICE_NAME" su - postgres -c "createdb -E utf8 $DATABASE_NAME"
-	//createDb := fmt.Sprintf("createdb -E utf8 %v\"", dbName)
-	cmdString := []string{
-		"docker", "exec",
-		"-u", "postgres",
-		serviceName,
-		"createdb", "-E", "utf8", dbName}
-	createDbCmd := common.NewShellCmd(strings.Join(cmdString, " "))
-	createDbCmd.ShowOutput = false
-	return createDbCmd.Execute()
-}
-
-func LinkServiceToApp(serviceName string, appName string) bool {
-	cmdStrings := []string{
-		"dokku", "postgres:link", serviceName, appName}
-	createDbCmd := common.NewShellCmd(strings.Join(cmdStrings, " "))
-	createDbCmd.ShowOutput = false
-	return createDbCmd.Execute()
+	linkText := fmt.Sprintf("--link %v:dokku-postgres-%v", serviceName, serviceName)
+	err = addLinkToDockerOptions([]string{"BUILD", "DEPLOY", "RUN"}, appName, linkText)
+	if err != nil {
+		return err
+	}
+	return config.SetMany(appName, map[string]string{"DATABASE_URL": serviceURL}, true)
 }

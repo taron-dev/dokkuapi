@@ -8,5 +8,6 @@ require (
 	github.com/dokku/dokku v0.20.0
 	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.7.4
+	github.com/ryanuber/columnize v2.1.0+incompatible // indirect
 	go.mongodb.org/mongo-driver v1.3.1
 )
