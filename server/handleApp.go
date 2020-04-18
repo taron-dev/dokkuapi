@@ -16,3 +16,9 @@ func (s *Server) deleteApp() http.HandlerFunc {
 		handlers.AppDelete(w, r, s.store)
 	}
 }
+
+func (s *Server) postAppDeploy() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		handlers.AppDeploy(w, r)
+	}
+}

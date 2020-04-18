@@ -10,4 +10,5 @@ dokkuapi_env
 deploy.sh
 build.sh
 build_deploy.sh
+build_deploy_dokku.sh
 start_with_env.sh
