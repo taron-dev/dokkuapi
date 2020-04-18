@@ -22,6 +22,11 @@ Don't forget to set all necessary environmental variables. You can run it locall
 |/users/{userId}|DELETE|delete user according userId|
 |/apps/|POST|create application|
 |/apps/{appId}|DELETE|delete user's application according appId|
+|/apps/{appId}/services|POST|create and link backing service to application|
+|/apps/{appId}/deploy|POST|use .tar file to deploy application|
+
+## Tar deployment
+Requires project directory compressed into `.tar` file. POST request should contains body form-data with `app_source_code` key and file value.
 
 
 ## Logging

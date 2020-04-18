@@ -16,5 +16,6 @@ func (s *Server) initRoutes() {
 	router.Handle("/apps", s.isAuthenticated(s.postApps())).Methods("POST")
 	router.Handle("/apps/{appId}", s.isAuthenticated(s.isUserAuthorizedApp(s.deleteApp()))).Methods("DELETE")
 	router.Handle("/apps/{appId}/services", s.isAuthenticated(s.isUserAuthorizedApp(s.postAppServices()))).Methods("POST")
+	router.Handle("/apps/{appId}/deploy", s.isAuthenticated(s.isUserAuthorizedApp(s.postAppDeploy()))).Methods("POST")
 	s.router = router
 }

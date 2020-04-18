@@ -124,7 +124,7 @@ func LinkServiceToApp(serviceName string, appName string) error {
 	if isAlreadyLinked(appName, serviceURL) {
 		return errors.New("Is already linked")
 	}
-	linksFilePath := fmt.Sprintf("%v/%v/LINKS", postgresRoot, serviceName)
+	linksFilePath := fmt.Sprintf("%v/%v/LINKS", postgresRoot, "dokku.postgres."+serviceName)
 	err = appendToFile(linksFilePath, appName)
 	if err != nil {
 		return err

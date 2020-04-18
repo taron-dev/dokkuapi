@@ -13,7 +13,7 @@ var GeneralLogger *log.Logger
 var ErrorLogger *log.Logger
 
 func init() {
-	generalLog, err := os.OpenFile("dokkuapi.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	generalLog, err := os.OpenFile("/home/dokku/.dokkuapi/dokkuapi.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		fmt.Println("Error opening file:", err)
 		os.Exit(1)

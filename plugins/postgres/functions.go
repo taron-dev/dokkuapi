@@ -54,7 +54,6 @@ func startPrevious(serviceRoot string, serviceName string) bool {
 	log.GeneralLogger.Println("Docker start successfull")
 	//TODO service_port_unpause
 	return true
-
 }
 
 func isValidServiceName(serviceName string) bool {
