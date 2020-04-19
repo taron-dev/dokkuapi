@@ -1,21 +1,14 @@
 package service
 
 import (
-	//log "github.com/ondro2208/dokkuapi/logger"
 	"github.com/ondro2208/dokkuapi/model"
 	str "github.com/ondro2208/dokkuapi/store"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	//"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
 )
 
 type ServicesService interface {
 	CreateService(name string, serviceType string) (*model.Service, int, string)
-	// GetExistingUser(githubUser *model.GithubUser) (*model.User, int, string)
-	// GetExistingUserById(userIdHex string) (*model.User, int, string)
-	// DeleteExistingUser(userIdHex string) error
-	// UpdateUserWithApplication(appName string, userId primitive.ObjectID) (*model.Application, int, string)
-	// DeleteUserApplication(userId primitive.ObjectID, appId primitive.ObjectID) (int, string, bool)
 }
 
 func NewServicesService(serviceStore *str.Store) ServicesService {

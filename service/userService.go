@@ -19,6 +19,7 @@ type UsersService interface {
 	GetExistingUser(githubUser *model.GithubUser) (*model.User, int, string)
 	GetExistingUserById(userIdHex string) (*model.User, int, string)
 	DeleteExistingUser(userIdHex string) error
+	GetUserApplications(userIdHex string) ([]model.Application, int, string)
 	UpdateUserWithApplication(appName string, userId primitive.ObjectID) (*model.Application, int, string)
 	SetUserApplicationServices(newApp model.Application, userId primitive.ObjectID) (*model.Application, int, string)
 	DeleteUserApplication(userId primitive.ObjectID, appId primitive.ObjectID) (int, string, bool)
@@ -80,9 +81,9 @@ func (us *UsersServiceContext) GetExistingUserById(userIdHex string) (*model.Use
 	err = users.FindOne(ctx, model.User{Id: idPrimitive}).Decode(&user)
 	if err != nil {
 		return nil, http.StatusInternalServerError, err.Error()
-	} else {
-		return user, http.StatusOK, "User founded by id"
 	}
+	return user, http.StatusOK, "User founded by id"
+
 }
 
 func (us *UsersServiceContext) DeleteExistingUser(userIdHex string) error {
@@ -103,6 +104,21 @@ func (us *UsersServiceContext) DeleteExistingUser(userIdHex string) error {
 		return errors.New(message)
 	}
 	return nil
+}
+
+func (us *UsersServiceContext) GetUserApplications(userIdHex string) ([]model.Application, int, string) {
+	idPrimitive, err := primitive.ObjectIDFromHex(userIdHex)
+	if err != nil {
+		log.ErrorLogger.Println("Parsing ObjectId from hex error: ", err.Error())
+		return nil, http.StatusInternalServerError, "Can't find user"
+	}
+	var user = new(model.User)
+	users, ctx := getCollection(us.store.Client, us.store.DbName, "users")
+	err = users.FindOne(ctx, model.User{Id: idPrimitive}).Decode(&user)
+	if err != nil {
+		return nil, http.StatusInternalServerError, err.Error()
+	}
+	return user.Applications, http.StatusOK, "User's apps founded"
 }
 
 func (us *UsersServiceContext) UpdateUserWithApplication(appName string, userId primitive.ObjectID) (*model.Application, int, string) {
