@@ -4,7 +4,6 @@ import (
 	"github.com/ondro2208/dokkuapi/contextimpl"
 	"github.com/ondro2208/dokkuapi/helper"
 	log "github.com/ondro2208/dokkuapi/logger"
-	"github.com/ondro2208/dokkuapi/model"
 	"github.com/ondro2208/dokkuapi/plugins/apps"
 	"github.com/ondro2208/dokkuapi/service"
 	str "github.com/ondro2208/dokkuapi/store"
@@ -19,7 +18,7 @@ func AppsCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	}
 	log.GeneralLogger.Println("User id from jwt ", sub)
 
-	var appPost model.ApplicationPost
+	var appPost postApp
 	err = helper.Decode(w, r, &appPost)
 	if err != nil {
 		helper.RespondWithMessage(w, r, http.StatusUnprocessableEntity, "Unable to parse request body")
@@ -54,4 +53,8 @@ func AppsCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
 		return
 	}
 	helper.RespondWithData(w, r, status, &app)
+}
+
+type postApp struct {
+	Name string `json:"appName,omitempty" bson:"appName,omitempty"`
 }

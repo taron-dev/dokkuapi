@@ -7,7 +7,6 @@ import (
 	"github.com/ondro2208/dokkuapi/contextimpl"
 	"github.com/ondro2208/dokkuapi/helper"
 	log "github.com/ondro2208/dokkuapi/logger"
-	"github.com/ondro2208/dokkuapi/model"
 	"github.com/ondro2208/dokkuapi/plugins/postgres"
 	"github.com/ondro2208/dokkuapi/service"
 	str "github.com/ondro2208/dokkuapi/store"
@@ -27,7 +26,7 @@ func ServiceCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	}
 
 	//parse request body
-	var servicePost model.ServicePost
+	var servicePost postService
 	err = helper.Decode(w, r, &servicePost)
 	if err != nil {
 		helper.RespondWithMessage(w, r, http.StatusUnprocessableEntity, "Unable to parse request body")
@@ -83,4 +82,10 @@ func ServiceCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	}
 
 	helper.RespondWithData(w, r, status, newService)
+}
+
+type postService struct {
+	Name    string `json:"serviceName,omitempty"`
+	Type    string `json:"serviceType,omitempty"`
+	Version string `json:"serviceVersion,omitempty"`
 }

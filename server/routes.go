@@ -14,6 +14,7 @@ func (s *Server) initRoutes() {
 	router.Handle("/users/{userId}", s.isAuthenticated(s.deleteUser())).Methods("DELETE")
 
 	router.Handle("/apps", s.isAuthenticated(s.postApps())).Methods("POST")
+	router.Handle("/apps", s.isAuthenticated(s.getApps())).Methods("GET")
 	router.Handle("/apps/{appId}", s.isAuthenticated(s.isUserAuthorizedApp(s.deleteApp()))).Methods("DELETE")
 	router.Handle("/apps/{appId}/services", s.isAuthenticated(s.isUserAuthorizedApp(s.postAppServices()))).Methods("POST")
 	router.Handle("/apps/{appId}/deploy", s.isAuthenticated(s.isUserAuthorizedApp(s.postAppDeploy()))).Methods("POST")

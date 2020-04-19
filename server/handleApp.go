@@ -11,6 +11,12 @@ func (s *Server) postApps() http.HandlerFunc {
 	}
 }
 
+func (s *Server) getApps() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		handlers.AppsGet(w, r, s.store)
+	}
+}
+
 func (s *Server) deleteApp() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		handlers.AppDelete(w, r, s.store)

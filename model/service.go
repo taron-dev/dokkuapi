@@ -11,13 +11,6 @@ type Service struct {
 	Type string             `json:"serviceType,omitempty" bson:"serviceType,omitempty"`
 }
 
-// ServicePost represents expected body for POST request on /apps/{appId}/services endpoint
-type ServicePost struct {
-	Name    string `json:"serviceName,omitempty"`
-	Type    string `json:"serviceType,omitempty"`
-	Version string `json:"serviceVersion,omitempty"`
-}
-
 // type ServiceType string
 // const (
 // 	REDIS    ServiceType = "REDIS"
