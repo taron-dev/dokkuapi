@@ -26,6 +26,7 @@ Don't forget to set all necessary environmental variables. You can run it locall
 |/apps/{appId}/deploy|POST|use .tar file to deploy application|
 |/apps/{appId}/services|POST|create and link backing service to application|
 |/apps/{appId}/instances|GET|provide app's instances info|
+|/apps/{appId}/instances|PUT|to scale app's instances|
 
 ## Tar deployment
 Requires project directory compressed into `.tar` file. POST request should contains body form-data with `app_source_code` key and file value.

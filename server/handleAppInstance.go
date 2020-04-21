@@ -10,3 +10,9 @@ func (s *Server) getAppInstances() http.HandlerFunc {
 		handlers.InstancesGet(w, r)
 	}
 }
+
+func (s *Server) putAppInstances() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		handlers.InstancesPut(w, r)
+	}
+}
