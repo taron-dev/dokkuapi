@@ -10,3 +10,9 @@ func (s *Server) postAppServices() http.HandlerFunc {
 		handlers.ServiceCreate(w, r, s.store)
 	}
 }
+
+func (s *Server) getAppServices() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		handlers.ServicesGet(w, r, s.store)
+	}
+}
