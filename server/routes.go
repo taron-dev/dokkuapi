@@ -16,13 +16,15 @@ func (s *Server) initRoutes() {
 	router.Handle("/apps", s.isAuthenticated(s.postApps())).Methods("POST")
 	router.Handle("/apps", s.isAuthenticated(s.getApps())).Methods("GET")
 	router.Handle("/apps/{appId}", s.isAuthenticated(s.isUserAuthorizedApp(s.deleteApp()))).Methods("DELETE")
+	// TODO PUT app - edit
 	router.Handle("/apps/{appId}/deploy", s.isAuthenticated(s.isUserAuthorizedApp(s.postAppDeploy()))).Methods("POST")
-
-	router.Handle("/apps/{appId}/services", s.isAuthenticated(s.isUserAuthorizedApp(s.postAppServices()))).Methods("POST")
-	router.Handle("/apps/{appId}/services", s.isAuthenticated(s.isUserAuthorizedApp(s.getAppServices()))).Methods("GET")
 
 	router.Handle("/apps/{appId}/instances", s.isAuthenticated(s.isUserAuthorizedApp(s.getAppInstances()))).Methods("GET")
 	router.Handle("/apps/{appId}/instances", s.isAuthenticated(s.isUserAuthorizedApp(s.putAppInstances()))).Methods("PUT")
+
+	router.Handle("/apps/{appId}/services", s.isAuthenticated(s.isUserAuthorizedApp(s.postAppServices()))).Methods("POST")
+	router.Handle("/apps/{appId}/services", s.isAuthenticated(s.isUserAuthorizedApp(s.getAppServices()))).Methods("GET")
+	router.Handle("/apps/{appId}/services/{serviceId}", s.isAuthenticated(s.isUserAuthorizedApp(s.deleteAppService()))).Methods("DELETE")
 
 	s.router = router
 }

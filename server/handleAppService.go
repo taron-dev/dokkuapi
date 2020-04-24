@@ -16,3 +16,9 @@ func (s *Server) getAppServices() http.HandlerFunc {
 		handlers.ServicesGet(w, r, s.store)
 	}
 }
+
+func (s *Server) deleteAppService() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		handlers.ServiceDelete(w, r, s.store)
+	}
+}

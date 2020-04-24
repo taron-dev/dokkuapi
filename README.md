@@ -24,14 +24,14 @@ Don't forget to set all necessary environmental variables. You can run it locall
 |/apps/|POST|create application|
 |/apps/{appId}|DELETE|delete user's application according appId|
 |/apps/{appId}/deploy|POST|use .tar file to deploy application|
-|/apps/{appId}/services|POST|create and link backing service to application|
-|/apps/{appId}/services|GET|retrieve backing service information|
 |/apps/{appId}/instances|GET|provide app's instances info|
 |/apps/{appId}/instances|PUT|to scale app's instances|
+|/apps/{appId}/services|POST|create and link backing service to application|
+|/apps/{appId}/services|GET|retrieve backing service information|
+|/apps/{appId}/services/{serviceId}|DELETE|unlink and delete service of application|
 
 ## Tar deployment
 Requires project directory compressed into `.tar` file. POST request should contains body form-data with `app_source_code` key and file value.
-
 
 ## Logging
 Logging is provided by package [logger](github.com/ondro2208/dokkuapi/logger). It exposes `GeneralLogger` and `ErrorLogger` to log api runtime into `dokkuapi.log` file. Webserver traffic is logged separate to `dokkuapi_webserver.log` file via [gorilla/handler](https://github.com/gorilla/handlers).

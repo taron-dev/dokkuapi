@@ -15,6 +15,7 @@ func AppsCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	sub, err := contextimpl.GetSub(r.Context())
 	if err != nil {
 		helper.RespondWithMessage(w, r, http.StatusInternalServerError, err.Error())
+		return
 	}
 	log.GeneralLogger.Println("User id from jwt ", sub)
 
@@ -31,6 +32,7 @@ func AppsCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	user, status, message := usersService.GetExistingUserById(sub)
 	if user == nil {
 		helper.RespondWithMessage(w, r, status, message)
+		return
 	}
 	log.GeneralLogger.Println("Founded user in database ", user.Username)
 
