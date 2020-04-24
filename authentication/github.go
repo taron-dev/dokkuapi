@@ -16,14 +16,14 @@ const githubAPIBaseURL = "https://api.github.com"
 func GetGithubUser(accessToken string) (*model.GithubUser, error) {
 	request, err := http.NewRequest("GET", githubAPIBaseURL+"/user", nil)
 	if err != nil {
-		log.ErrorLogger.Println(err)
+		log.ErrorLogger.Println(err.Error())
 		return nil, err
 	}
 	request.Header.Add("Authorization", "Bearer "+accessToken)
 
 	response, err := httpClient.Do(request)
 	if err != nil {
-		log.ErrorLogger.Println(err)
+		log.ErrorLogger.Println(err.Error())
 		return nil, err
 	}
 
@@ -34,7 +34,7 @@ func GetGithubUser(accessToken string) (*model.GithubUser, error) {
 	var githubUser *model.GithubUser
 	err = json.NewDecoder(response.Body).Decode(&githubUser)
 	if err != nil {
-		log.ErrorLogger.Println(err)
+		log.ErrorLogger.Println(err.Error())
 		return nil, err
 	}
 	return githubUser, nil

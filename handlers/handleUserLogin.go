@@ -13,12 +13,14 @@ func UserLogin(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	githubUser, err := contextimpl.GetGithubUser(r.Context())
 	if err != nil {
 		helper.RespondWithMessage(w, r, http.StatusInternalServerError, err.Error())
+		return
 	}
 	usersService := service.NewUsersService(store)
 	user, status, message := usersService.GetExistingUser(githubUser)
 	if user == nil {
 		helper.RespondWithMessage(w, r, status, message)
-	} else {
-		respondAfterVerify(w, r, status, user)
+		return
 	}
+	respondAfterVerify(w, r, status, user)
+
 }

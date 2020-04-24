@@ -36,6 +36,18 @@ func RespondWithMessage(w http.ResponseWriter, r *http.Request, status int, mess
 
 }
 
+// RespondWithMessageAndOutput unify response format with message and output instead of data
+func RespondWithMessageAndOutput(w http.ResponseWriter, r *http.Request, status int, message string, output string) {
+	w.Header().Add("content-type", "application/json")
+	w.WriteHeader(status)
+	jsonData, err := json.Marshal(map[string]string{"message": message, "output": output})
+	if err != nil {
+		w.Write([]byte(""))
+	}
+	w.Write(jsonData)
+
+}
+
 // Decode body from request into object
 func Decode(w http.ResponseWriter, r *http.Request, object interface{}) error {
 	return json.NewDecoder(r.Body).Decode(object)

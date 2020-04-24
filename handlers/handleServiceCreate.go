@@ -13,15 +13,15 @@ import (
 
 // ServiceCreate creates backing service for app
 func ServiceCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
-	//get appId param from url
-	// authorize user towards appId
 	app, err := contextimpl.GetApp(r.Context())
 	if err != nil {
 		helper.RespondWithMessage(w, r, http.StatusInternalServerError, err.Error())
+		return
 	}
 	user, err := contextimpl.GetUser(r.Context())
 	if err != nil {
 		helper.RespondWithMessage(w, r, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	//parse request body
@@ -34,16 +34,17 @@ func ServiceCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
 
 	//dokku create service
 	serviceType := strings.ToLower(servicePost.Type)
-
-	var status int = -1
-	var message string = ""
 	switch serviceType {
 	case "postgres":
 		{
-			status, message, err = postgres.Create(servicePost.Name, servicePost.Version)
-			if err != nil {
-				log.ErrorLogger.Println(err.Error())
-				helper.RespondWithMessage(w, r, status, message)
+			if serviceAlreadyExists := postgres.ServiceExists(servicePost.Name); serviceAlreadyExists {
+				helper.RespondWithMessage(w, r, http.StatusUnprocessableEntity, "Wrong app name")
+				return
+			}
+			ok, out := postgres.CreateService(servicePost.Name)
+			if !ok {
+				log.ErrorLogger.Println(out)
+				helper.RespondWithMessageAndOutput(w, r, http.StatusInternalServerError, "Can't create postgres service", out)
 				return
 			}
 		}
@@ -58,15 +59,14 @@ func ServiceCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	servicesService := service.NewServicesService(store)
 	newService, status, message := servicesService.CreateService(servicePost.Name, serviceType)
 	if newService == nil {
-		//TODO destroy service in dokku
-		log.ErrorLogger.Println("Store service - FAIL")
+		postgres.DestroyService(servicePost.Name)
+		log.ErrorLogger.Println("Can't store service")
 		helper.RespondWithMessage(w, r, status, message)
 		return
 	}
 
-	err = postgres.LinkServiceToApp(newService.Name, app.Name)
-	if err != nil {
-		helper.RespondWithMessage(w, r, http.StatusInternalServerError, err.Error())
+	if ok, out := postgres.LinkService(newService.Name, app.Name); !ok {
+		helper.RespondWithMessageAndOutput(w, r, http.StatusInternalServerError, "Can't link service", out)
 		return
 	}
 

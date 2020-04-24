@@ -18,6 +18,7 @@ func UserDelete(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	sub, err := contextimpl.GetSub(r.Context())
 	if err != nil {
 		helper.RespondWithMessage(w, r, http.StatusInternalServerError, err.Error())
+		return
 	}
 	userIDParam := mux.Vars(r)["userId"]
 	if sub == userIDParam {
@@ -26,6 +27,7 @@ func UserDelete(w http.ResponseWriter, r *http.Request, store *str.Store) {
 		err := usersService.DeleteExistingUser(userIDParam)
 		if err != nil {
 			helper.RespondWithMessage(w, r, http.StatusInternalServerError, "User not deleted")
+			return
 		}
 
 		if !ssh.RemoveSSHPublicKey(user.Username) {
@@ -35,8 +37,7 @@ func UserDelete(w http.ResponseWriter, r *http.Request, store *str.Store) {
 		}
 
 		helper.RespondWithMessage(w, r, http.StatusAccepted, "User deleted")
-
-	} else {
-		helper.RespondWithMessage(w, r, http.StatusUnauthorized, "Not Authorized")
+		return
 	}
+	helper.RespondWithMessage(w, r, http.StatusUnauthorized, "Not Authorized")
 }

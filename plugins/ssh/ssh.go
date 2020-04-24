@@ -102,6 +102,5 @@ func validateKeyFile(path string) bool {
 		os.Remove(path)
 		return false
 	}
-	log.ErrorLogger.Println("Public key is valid")
 	return true
 }

@@ -16,10 +16,12 @@ func AppDelete(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	app, err := contextimpl.GetApp(r.Context())
 	if err != nil {
 		helper.RespondWithMessage(w, r, http.StatusInternalServerError, err.Error())
+		return
 	}
 	user, err := contextimpl.GetUser(r.Context())
 	if err != nil {
 		helper.RespondWithMessage(w, r, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	//TODO unlink backing services

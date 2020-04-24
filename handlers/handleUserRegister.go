@@ -16,17 +16,20 @@ func UserRegister(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	githubUser, err := contextimpl.GetGithubUser(r.Context())
 	if err != nil {
 		helper.RespondWithMessage(w, r, http.StatusInternalServerError, err.Error())
+		return
 	}
 	usersService := service.NewUsersService(store)
 	user, status, message := usersService.CreateUser(githubUser)
 	if user == nil {
 		helper.RespondWithMessage(w, r, status, message)
+		return
 	}
 
 	body := new(registerBody)
 	err = helper.Decode(w, r, body)
 	if err != nil {
 		helper.RespondWithMessage(w, r, http.StatusUnprocessableEntity, err.Error())
+		return
 	}
 
 	if !ssh.AddSSHPublicKey(user.Username, body.SSHPublicKey) {
@@ -34,7 +37,6 @@ func UserRegister(w http.ResponseWriter, r *http.Request, store *str.Store) {
 		helper.RespondWithMessage(w, r, http.StatusUnprocessableEntity, "Can't add ssh public key")
 		return
 	}
-
 	respondAfterVerify(w, r, status, user)
 }
 

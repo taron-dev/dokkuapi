@@ -17,6 +17,7 @@ func AppDeploy(w http.ResponseWriter, r *http.Request) {
 	app, err := contextimpl.GetApp(r.Context())
 	if err != nil {
 		helper.RespondWithMessage(w, r, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	r.ParseMultipartForm(25 << 20)

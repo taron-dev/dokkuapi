@@ -47,6 +47,7 @@ func InstancesPut(w http.ResponseWriter, r *http.Request) {
 	webContainerIDs, err := common.GetWebContainerIDs(app.Name)
 	if err != nil {
 		helper.RespondWithMessage(w, r, http.StatusCreated, "App scaled successfully")
+		return
 	}
 	is := service.NewInstancesService()
 	instances, status, message := is.GetInstancesInfo(webContainerIDs)

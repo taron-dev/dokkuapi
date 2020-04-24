@@ -14,17 +14,20 @@ func InstancesGet(w http.ResponseWriter, r *http.Request) {
 	app, err := contextimpl.GetApp(r.Context())
 	if err != nil {
 		helper.RespondWithMessage(w, r, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	webContainerIDs, err := common.GetWebContainerIDs(app.Name)
 	if err != nil {
 		helper.RespondWithMessage(w, r, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	is := service.NewInstancesService()
 	instances, status, message := is.GetInstancesInfo(webContainerIDs)
-	if instances == nil {
+	if status != http.StatusOK {
 		helper.RespondWithMessage(w, r, status, message)
+		return
 	}
 
 	helper.RespondWithData(w, r, status, instances)

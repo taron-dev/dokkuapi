@@ -15,6 +15,7 @@ func AppsGet(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	sub, err := contextimpl.GetSub(r.Context())
 	if err != nil {
 		helper.RespondWithMessage(w, r, http.StatusInternalServerError, err.Error())
+		return
 	}
 	log.GeneralLogger.Println("User id from jwt ", sub)
 
@@ -23,12 +24,15 @@ func AppsGet(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	//1. Get apps list from db
 	usersService := service.NewUsersService(store)
 	apps, status, message := usersService.GetUserApplications(sub)
-	if apps == nil {
+	if status != http.StatusOK {
 		helper.RespondWithMessage(w, r, status, message)
+		return
 	}
 
 	for _, app := range apps {
 		userApp := new(getApp)
+		userApp.ID = app.Id.Hex()
+
 		userApp.Name = app.Name
 		//2. read VHOST for each
 		userApp.URLs = common.GetAppUrls(app.Name)
@@ -45,6 +49,7 @@ func AppsGet(w http.ResponseWriter, r *http.Request, store *str.Store) {
 }
 
 type getApp struct {
+	ID        string   `json:"appId"`
 	Name      string   `json:"appName"`
 	URLs      []string `json:"urls"`
 	Status    string   `json:"status"`
