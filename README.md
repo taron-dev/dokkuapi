@@ -23,7 +23,9 @@ Don't forget to set all necessary environmental variables. You can run it locall
 |/apps/|GET|retrieve info about user's applications|
 |/apps/|POST|create application|
 |/apps/{appId}|DELETE|delete user's application according appId|
+|/apps/{appId}|PUT|edit application|
 |/apps/{appId}/deploy|POST|use .tar file to deploy application|
+|/apps/{appId}/stop|PUT|stop running application|
 |/apps/{appId}/instances|GET|provide app's instances info|
 |/apps/{appId}/instances|PUT|to scale app's instances|
 |/apps/{appId}/services|POST|create and link backing service to application|

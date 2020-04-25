@@ -34,3 +34,9 @@ func (s *Server) postAppDeploy() http.HandlerFunc {
 		handlers.AppDeploy(w, r)
 	}
 }
+
+func (s *Server) putAppStop() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		handlers.AppStop(w, r)
+	}
+}
