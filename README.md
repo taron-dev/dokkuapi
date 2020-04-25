@@ -20,6 +20,7 @@ Don't forget to set all necessary environmental variables. You can run it locall
 |/login|POST|to login with github|
 |/logout|POST|to deny access to api|
 |/users/{userId}|DELETE|delete user according userId|
+|/users/{userId}|PUT|update user setup|
 |/apps/|GET|retrieve info about user's applications|
 |/apps/|POST|create application|
 |/apps/{appId}|DELETE|delete user's application according appId|

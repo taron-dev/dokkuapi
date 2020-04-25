@@ -48,10 +48,12 @@ func (s *Server) isUserAuthorizedApp(endpointHandler http.HandlerFunc) http.Hand
 		sub, err := contextimpl.GetSub(request.Context())
 		if err != nil {
 			helper.RespondWithMessage(response, request, http.StatusInternalServerError, err.Error())
+			return
 		}
 		responseObj := author.GetAppID(request)
 		if responseObj.Value == nil {
 			helper.RespondWithMessage(response, request, responseObj.Status, responseObj.Message)
+			return
 		}
 		appID := responseObj.Value.(primitive.ObjectID)
 
@@ -59,11 +61,13 @@ func (s *Server) isUserAuthorizedApp(endpointHandler http.HandlerFunc) http.Hand
 		user, status, message := usersService.GetExistingUserById(sub)
 		if user == nil {
 			helper.RespondWithMessage(response, request, status, message)
+			return
 		}
 
 		responseObj = author.AuthorizeUserApp(user, appID)
 		if responseObj.Value == nil {
 			helper.RespondWithMessage(response, request, responseObj.Status, responseObj.Message)
+			return
 		}
 		app := responseObj.Value.(*model.Application)
 
