@@ -25,6 +25,8 @@ Don't forget to set all necessary environmental variables. You can run it locall
 |/apps/|POST|create application|
 |/apps/{appId}|DELETE|delete user's application according appId|
 |/apps/{appId}|PUT|edit application|
+|/apps/{appId}/logs|GET|provides app's logs|
+|/apps/{appId}/logs-failed|GET|provides logs for app's last failed build|
 |/apps/{appId}/deploy|POST|use .tar file to deploy application|
 |/apps/{appId}/stop|PUT|stop running application|
 |/apps/{appId}/start|PUT|start stopped application|

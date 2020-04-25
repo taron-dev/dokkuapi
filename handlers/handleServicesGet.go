@@ -9,6 +9,7 @@ import (
 	"net/http"
 )
 
+// ServicesGet provides info about app's services
 func ServicesGet(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	app, err := contextimpl.GetApp(r.Context())
 	if err != nil {
