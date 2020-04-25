@@ -16,7 +16,8 @@ func (s *Server) initRoutes() {
 	router.Handle("/apps", s.isAuthenticated(s.postApps())).Methods("POST")
 	router.Handle("/apps", s.isAuthenticated(s.getApps())).Methods("GET")
 	router.Handle("/apps/{appId}", s.isAuthenticated(s.isUserAuthorizedApp(s.deleteApp()))).Methods("DELETE")
-	// TODO PUT app - edit
+	router.Handle("/apps/{appId}", s.isAuthenticated(s.isUserAuthorizedApp(s.putApp()))).Methods("PUT")
+
 	router.Handle("/apps/{appId}/deploy", s.isAuthenticated(s.isUserAuthorizedApp(s.postAppDeploy()))).Methods("POST")
 
 	router.Handle("/apps/{appId}/instances", s.isAuthenticated(s.isUserAuthorizedApp(s.getAppInstances()))).Methods("GET")

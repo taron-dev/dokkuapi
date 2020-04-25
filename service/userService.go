@@ -22,6 +22,7 @@ type UsersService interface {
 	GetUserApplications(userIdHex string) ([]model.Application, int, string)
 	UpdateUserWithApplication(appName string, userId primitive.ObjectID) (*model.Application, int, string)
 	SetUserApplicationServices(newApp model.Application, userId primitive.ObjectID) (*model.Application, int, string)
+	SetUserApplicationName(userId primitive.ObjectID, appId primitive.ObjectID, appName string) (int, string)
 	DeleteUserApplication(userId primitive.ObjectID, appId primitive.ObjectID) (int, string, bool)
 }
 
@@ -178,7 +179,7 @@ func (us *UsersServiceContext) DeleteUserApplication(userId primitive.ObjectID, 
 			{"$pull", bson.M{"applications": bson.M{"_id": appId}}},
 		},
 	)
-	log.GeneralLogger.Println("Result after updating database ", result)
+	log.GeneralLogger.Println("Result after updating database ", result.MatchedCount)
 	if err != nil {
 		log.ErrorLogger.Println(err)
 		return http.StatusUnprocessableEntity, "Can't delete application", true
@@ -189,4 +190,26 @@ func (us *UsersServiceContext) DeleteUserApplication(userId primitive.ObjectID, 
 	}
 
 	return http.StatusAccepted, "Application deleted successfully", false
+}
+
+func (us *UsersServiceContext) SetUserApplicationName(userId primitive.ObjectID, appId primitive.ObjectID, appName string) (int, string) {
+	users, ctx := getCollection(us.store.Client, us.store.DbName, "users")
+	result, err := users.UpdateOne(
+		ctx,
+		bson.M{"_id": userId, "applications._id": appId},
+		bson.D{
+			{"$set", bson.M{"applications.$.appName": appName}},
+		},
+	)
+	log.GeneralLogger.Println("Result after updating database ", result.ModifiedCount)
+	if err != nil {
+		log.ErrorLogger.Println(err)
+		return http.StatusUnprocessableEntity, "Unable to rename application"
+	}
+
+	if result.MatchedCount == 0 {
+		return http.StatusInternalServerError, "No app updated"
+	}
+
+	return http.StatusCreated, "Application name successfully updated"
 }
