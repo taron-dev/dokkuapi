@@ -24,14 +24,6 @@ func GetAppUrls(appName string) []string {
 	return urls
 }
 
-// GetAppStatus return if app is deployed or not
-func GetAppStatus(appName string) string {
-	if common.IsDeployed(appName) {
-		return "DEPLOYED"
-	}
-	return "NOT DEPLOYED"
-}
-
 // GetAppInstances return app instances count
 func GetAppInstances(appName string) int {
 	scheduler := common.GetAppScheduler(appName)

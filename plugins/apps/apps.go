@@ -25,3 +25,13 @@ func DestroyApp(appName string) (int, string, error) {
 	}
 	return 200, "", nil
 }
+
+// RenameApp : dokku apps:rename oldAppName newAppName
+func RenameApp(oldAppName string, newAppName string) (int, string, error) {
+	err := dApps.CommandRename([]string{oldAppName, newAppName}, false)
+	if err != nil {
+		log.ErrorLogger.Println(err)
+		return 422, "Can't rename app", err
+	}
+	return 201, "", nil
+}

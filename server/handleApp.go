@@ -23,6 +23,12 @@ func (s *Server) deleteApp() http.HandlerFunc {
 	}
 }
 
+func (s *Server) putApp() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		handlers.AppEdit(w, r, s.store)
+	}
+}
+
 func (s *Server) postAppDeploy() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		handlers.AppDeploy(w, r)

@@ -5,6 +5,7 @@ import (
 	"github.com/ondro2208/dokkuapi/helper"
 	log "github.com/ondro2208/dokkuapi/logger"
 	"github.com/ondro2208/dokkuapi/plugins/common"
+	"github.com/ondro2208/dokkuapi/plugins/ps"
 	"github.com/ondro2208/dokkuapi/service"
 	str "github.com/ondro2208/dokkuapi/store"
 	"net/http"
@@ -37,7 +38,7 @@ func AppsGet(w http.ResponseWriter, r *http.Request, store *str.Store) {
 		//2. read VHOST for each
 		userApp.URLs = common.GetAppUrls(app.Name)
 		// 3. GetRunningImageTag for each app
-		userApp.Status = common.GetAppStatus(app.Name)
+		userApp.Status = ps.GetAppStatus(app.Name)
 
 		// 4. run scheduler ap status for each app
 		if instances := common.GetAppInstances(app.Name); instances >= 0 {
