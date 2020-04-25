@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/dokku/dokku/plugins/common"
 	log "github.com/ondro2208/dokkuapi/logger"
+	"os/exec"
 	"strings"
 )
 
@@ -41,49 +42,31 @@ func GetAppStatus(appName string) string {
 		return "NOT DEPLOYED"
 	}
 
-	webContainerIDs, err := common.GetAppContainerIDs(appName, "web")
+	containerIDs, err := common.GetAppContainerIDs(appName, "")
 	if err != nil {
 		log.ErrorLogger.Println(err.Error())
 		return ""
 	}
-	workerContainerIDs, err := common.GetAppContainerIDs(appName, "worker")
-	if err != nil {
-		log.ErrorLogger.Println(err.Error())
-		return ""
-	}
-
-	isStopped := true
-
-	for _, containerID := range webContainerIDs {
+	for _, containerID := range containerIDs {
 		status, err := common.DockerInspect(containerID, "'{{.State.Status}}'")
 		if err != nil {
 			log.ErrorLogger.Println(err.Error())
 			return ""
 		}
 		if status != "exited" {
-			isStopped = false
-			break
+			return "DEPLOYED"
 		}
 	}
 
-	if !isStopped {
-		return "DEPLOYED"
-	}
-
-	for _, containerID := range workerContainerIDs {
-		status, err := common.DockerInspect(containerID, "'{{.State.Status}}'")
-		if err != nil {
-			log.ErrorLogger.Println(err.Error())
-			return ""
-		}
-		if status != "exited" {
-			isStopped = false
-			break
-		}
-	}
-	if !isStopped {
-		return "DEPLOYED"
-	}
 	return "STOPPED"
+}
 
+// StopApp dokku ps:stop appName
+func StopApp(appName string) (bool, string) {
+	out, err := exec.Command("dokku", "ps:stop", appName).CombinedOutput()
+	if err != nil {
+		log.ErrorLogger.Println("Can't stop app:", err.Error(), string(out))
+		return false, string(out)
+	}
+	return true, ""
 }
