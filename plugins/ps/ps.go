@@ -70,3 +70,13 @@ func StopApp(appName string) (bool, string) {
 	}
 	return true, ""
 }
+
+// StartApp dokku ps:start appName
+func StartApp(appName string) (bool, string) {
+	out, err := exec.Command("dokku", "ps:start", appName).CombinedOutput()
+	if err != nil {
+		log.ErrorLogger.Println("Can't start app:", err.Error(), string(out))
+		return false, string(out)
+	}
+	return true, ""
+}

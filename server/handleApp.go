@@ -40,3 +40,9 @@ func (s *Server) putAppStop() http.HandlerFunc {
 		handlers.AppStop(w, r)
 	}
 }
+
+func (s *Server) putAppStart() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		handlers.AppStart(w, r)
+	}
+}
