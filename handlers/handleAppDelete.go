@@ -5,6 +5,7 @@ import (
 	"github.com/ondro2208/dokkuapi/helper"
 	log "github.com/ondro2208/dokkuapi/logger"
 	"github.com/ondro2208/dokkuapi/plugins/apps"
+	"github.com/ondro2208/dokkuapi/plugins/postgres"
 	"github.com/ondro2208/dokkuapi/service"
 	str "github.com/ondro2208/dokkuapi/store"
 	"net/http"
@@ -24,7 +25,32 @@ func AppDelete(w http.ResponseWriter, r *http.Request, store *str.Store) {
 		return
 	}
 
-	//TODO unlink backing services
+	//find service name from DB
+	ss := service.NewServicesService(store)
+	for _, appServiceID := range app.Services {
+		serviceStr, status, message := ss.GetServiceById(appServiceID.Hex())
+		if status != http.StatusOK {
+			helper.RespondWithMessage(w, r, http.StatusInternalServerError, message)
+			return
+		}
+		if serviceStr == nil {
+			log.ErrorLogger.Println("Service with", appServiceID.Hex(), "doesn't exists")
+			helper.RespondWithMessage(w, r, http.StatusNotFound, "Unknown service")
+			return
+		}
+
+		// unlink
+		if ok, out := postgres.UnlinkService(serviceStr.Name, app.Name); !ok {
+			helper.RespondWithMessageAndOutput(w, r, http.StatusInternalServerError, "Can't unlink service", out)
+			return
+		}
+		//destroy service
+		if ok, out := postgres.DestroyService(serviceStr.Name); !ok {
+			helper.RespondWithMessageAndOutput(w, r, http.StatusInternalServerError, "Can't destroy service", out)
+			return
+		}
+	}
+
 	// dokku apps:destory
 	code, m, err := apps.DestroyApp(app.Name)
 	if err != nil {
