@@ -36,7 +36,6 @@ func AppsCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	}
 	log.GeneralLogger.Println("Founded user in database ", user.Username)
 
-	// TODO creating backing services
 	// dokku apps:create
 	code, m, err := apps.CreateApp(appName)
 	if err != nil {
@@ -46,7 +45,6 @@ func AppsCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	}
 	log.GeneralLogger.Println("Application ", appName, " created successfully")
 
-	// TODO add backing services
 	app, status, message := usersService.UpdateUserWithApplication(appName, user.Id)
 	if app == nil {
 		_, _, err := apps.DestroyApp(appName)
@@ -58,5 +56,5 @@ func AppsCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
 }
 
 type postApp struct {
-	Name string `json:"appName,omitempty" bson:"appName,omitempty"`
+	Name string `json:"appName,omitempty"`
 }

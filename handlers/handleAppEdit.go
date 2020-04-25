@@ -27,7 +27,11 @@ func AppEdit(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	usersService := service.NewUsersService(store)
 	//parse body
 	editApp := new(putApp)
-	helper.Decode(w, r, editApp)
+	err = helper.Decode(w, r, editApp)
+	if err != nil {
+		helper.RespondWithMessage(w, r, http.StatusUnprocessableEntity, "Unable to parse request body")
+		return
+	}
 	if editApp.Name != "" {
 		//dokku apps:rename appName newName
 		// NOT WORKING - status, message, err := apps.RenameApp(app.Name, editApp.Name)
