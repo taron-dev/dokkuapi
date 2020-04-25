@@ -10,21 +10,23 @@ import (
 func GetAppLogs(appName string, linesNum int, processName string, quiet bool) (string, error) {
 	args := []string{"logs", appName}
 	if linesNum > 0 {
-		linesNumPart := fmt.Sprintf("-n \"%v\"", linesNum)
+		linesNumPart := fmt.Sprintf("-n %v", linesNum)
 		args = append(args, linesNumPart)
-	}
-
-	if processName != "" {
-		processPart := fmt.Sprintf("-p \"%v\"", processName)
-		args = append(args, processPart)
 	}
 
 	if quiet {
 		args = append(args, "-q")
 	}
 
+	if processName != "" {
+		args = append(args, "-p")
+		args = append(args, processName)
+	}
+
 	out, err := exec.Command("dokku", args...).CombinedOutput()
 	output := string(out)
+	log.GeneralLogger.Println("output:", output)
+	log.GeneralLogger.Println("END")
 	if err != nil {
 		log.ErrorLogger.Println("Cant' execute logs command:", err.Error(), "\n", output)
 		return output, err
