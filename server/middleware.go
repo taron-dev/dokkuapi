@@ -17,7 +17,6 @@ func (s *Server) isAuthenticated(endpointHandler http.HandlerFunc) http.HandlerF
 	return func(response http.ResponseWriter, request *http.Request) {
 		response.Header().Set("content-type", "application/json")
 		if auth.HasValidToken(response, request, s.blackList) {
-			// database usage for user id ??? TODO
 			request = contextimpl.DecorateWithSub(request)
 			endpointHandler(response, request)
 		} else {
