@@ -20,6 +20,9 @@ func (s *Server) initRoutes() {
 	router.Handle("/apps/{appId}", s.isAuthenticated(s.isUserAuthorizedApp(s.deleteApp()))).Methods("DELETE")
 	router.Handle("/apps/{appId}", s.isAuthenticated(s.isUserAuthorizedApp(s.putApp()))).Methods("PUT")
 
+	router.Handle("/apps/{appId}/logs", s.isAuthenticated(s.isUserAuthorizedApp(s.getAppLogs()))).Methods("GET")
+	router.Handle("/apps/{appId}/logs-failed", s.isAuthenticated(s.isUserAuthorizedApp(s.getAppFailedLogs()))).Methods("GET")
+
 	router.Handle("/apps/{appId}/deploy", s.isAuthenticated(s.isUserAuthorizedApp(s.postAppDeploy()))).Methods("POST")
 	router.Handle("/apps/{appId}/stop", s.isAuthenticated(s.isUserAuthorizedApp(s.putAppStop()))).Methods("PUT")
 	router.Handle("/apps/{appId}/start", s.isAuthenticated(s.isUserAuthorizedApp(s.putAppStart()))).Methods("PUT")

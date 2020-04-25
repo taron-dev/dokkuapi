@@ -46,3 +46,15 @@ func (s *Server) putAppStart() http.HandlerFunc {
 		handlers.AppStart(w, r)
 	}
 }
+
+func (s *Server) getAppLogs() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		handlers.AppLogs(w, r)
+	}
+}
+
+func (s *Server) getAppFailedLogs() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		handlers.AppFailedLogs(w, r)
+	}
+}

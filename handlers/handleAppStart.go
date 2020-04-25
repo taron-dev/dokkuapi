@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+// AppStart starts application
 func AppStart(w http.ResponseWriter, r *http.Request) {
 	app, err := contextimpl.GetApp(r.Context())
 	if err != nil {
