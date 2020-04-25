@@ -13,31 +13,38 @@ import (
 
 // UserDelete delete authorized user from db
 func UserDelete(w http.ResponseWriter, r *http.Request, store *str.Store) {
-	//TODO delete related services
-	//TODO delete related apps
 	sub, err := contextimpl.GetSub(r.Context())
 	if err != nil {
 		helper.RespondWithMessage(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
+
+	//if try to delete other user
 	userIDParam := mux.Vars(r)["userId"]
-	if sub == userIDParam {
-		usersService := service.NewUsersService(store)
-		user, _, _ := usersService.GetExistingUserById(userIDParam)
-		err := usersService.DeleteExistingUser(userIDParam)
-		if err != nil {
-			helper.RespondWithMessage(w, r, http.StatusInternalServerError, "User not deleted")
-			return
-		}
-
-		if !ssh.RemoveSSHPublicKey(user.Username) {
-			log.ErrorLogger.Println("Can't remove sshkey for:", user.Username)
-			helper.RespondWithMessage(w, r, http.StatusInternalServerError, "User's ssh not removed")
-			return
-		}
-
-		helper.RespondWithMessage(w, r, http.StatusAccepted, "User deleted")
+	if sub != userIDParam {
+		helper.RespondWithMessage(w, r, http.StatusUnauthorized, "Not Authorized")
 		return
 	}
-	helper.RespondWithMessage(w, r, http.StatusUnauthorized, "Not Authorized")
+
+	usersService := service.NewUsersService(store)
+	user, _, _ := usersService.GetExistingUserById(userIDParam)
+
+	if len(user.Applications) > 0 {
+		helper.RespondWithMessage(w, r, http.StatusBadRequest, "User has apps. Delete app first")
+		return
+	}
+
+	err = usersService.DeleteExistingUser(userIDParam)
+	if err != nil {
+		helper.RespondWithMessage(w, r, http.StatusInternalServerError, "User not deleted")
+		return
+	}
+
+	if !ssh.RemoveSSHPublicKey(user.Username) {
+		log.ErrorLogger.Println("Can't remove sshkey for:", user.Username)
+		helper.RespondWithMessage(w, r, http.StatusInternalServerError, "User's ssh not removed")
+		return
+	}
+
+	helper.RespondWithMessage(w, r, http.StatusAccepted, "User deleted")
 }
