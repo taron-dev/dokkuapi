@@ -28,3 +28,9 @@ func (s *Server) deleteUser() http.HandlerFunc {
 		handlers.UserDelete(w, r, s.store)
 	}
 }
+
+func (s *Server) putUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		handlers.UserEdit(w, r, s.store)
+	}
+}

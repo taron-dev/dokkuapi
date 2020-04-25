@@ -2,10 +2,15 @@ package ssh
 
 import (
 	"bufio"
+	"crypto/rand"
+	"fmt"
 	"github.com/dokku/dokku/plugins/common"
 	log "github.com/ondro2208/dokkuapi/logger"
+	"io"
 	"io/ioutil"
 	"os"
+	"os/exec"
+	"regexp"
 	"strings"
 )
 
@@ -75,6 +80,44 @@ func RemoveSSHPublicKey(userName string) bool {
 	return cmd.Execute()
 }
 
+// UserHasPublicSSHKey check if user has already added public ssh key
+func UserHasPublicSSHKey(userName string) (bool, error) {
+	out, err := exec.Command("dokku", "ssh-keys:list").CombinedOutput()
+	output := string(out)
+	if err != nil {
+		log.ErrorLogger.Println("Can't get public ssh keys list:", err.Error(), output)
+		return false, err
+	}
+	regex := regexp.MustCompile("NAME=\"" + userName + "\"")
+	matches := regex.FindStringSubmatch(output)
+	if len(matches) > 0 {
+		return true, nil
+	}
+
+	return false, nil
+}
+
+// IsValidPublicSSHKey validate publicKey
+func IsValidPublicSSHKey(userName string, publicKey string) (bool, error) {
+	uuid, err := newUUID()
+	if err != nil {
+		return false, err
+	}
+	var dokkuRoot = os.Getenv("DOKKU_ROOT")
+	pubKeyPath := dokkuRoot + "/.ssh/" + userName + uuid + ".pub"
+	//dat kluc do suboru
+	err = storeKeyToFile(pubKeyPath, publicKey)
+	if err != nil {
+		return false, err
+	}
+	//Validacia suboru
+	if !validateKeyFile(pubKeyPath) {
+		return false, nil
+	}
+	os.Remove(pubKeyPath)
+	return true, nil
+}
+
 func storeKeyToFile(path string, publicKey string) error {
 	err := ioutil.WriteFile(path, []byte(publicKey), 0755)
 	if err != nil {
@@ -103,4 +146,17 @@ func validateKeyFile(path string) bool {
 		return false
 	}
 	return true
+}
+
+func newUUID() (string, error) {
+	uuid := make([]byte, 16)
+	n, err := io.ReadFull(rand.Reader, uuid)
+	if n != len(uuid) || err != nil {
+		return "", err
+	}
+	// variant bits; see section 4.1.1
+	uuid[8] = uuid[8]&^0xc0 | 0x80
+	// version 4 (pseudo-random); see section 4.1.3
+	uuid[6] = uuid[6]&^0xf0 | 0x40
+	return fmt.Sprintf("%x", uuid), nil
 }
