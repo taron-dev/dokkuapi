@@ -86,3 +86,23 @@ func StartApp(appName string) (bool, string) {
 	}
 	return true, ""
 }
+
+// RestartApp dokku ps:restart appName
+func RestartApp(appName string) (bool, string) {
+	out, err := exec.Command("dokku", "ps:restart", appName).CombinedOutput()
+	if err != nil {
+		log.ErrorLogger.Println("Can't restart app:", err.Error(), string(out))
+		return false, string(out)
+	}
+	return true, ""
+}
+
+// RebuildApp dokku ps:rebuild appName
+func RebuildApp(appName string) (bool, string) {
+	out, err := exec.Command("dokku", "ps:rebuild", appName).CombinedOutput()
+	if err != nil {
+		log.ErrorLogger.Println("Can't rebuild app:", err.Error(), string(out))
+		return false, string(out)
+	}
+	return true, ""
+}
