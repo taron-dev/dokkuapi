@@ -1,11 +1,15 @@
 package ps
 
 import (
+	"errors"
 	"fmt"
 	"github.com/dokku/dokku/plugins/apps"
 	"github.com/dokku/dokku/plugins/common"
 	log "github.com/ondro2208/dokkuapi/logger"
+	"io/ioutil"
+	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 )
 
@@ -105,4 +109,67 @@ func RebuildApp(appName string) (bool, string) {
 		return false, string(out)
 	}
 	return true, ""
+}
+
+// GetRestartPolicy provides app's restart policy
+func GetRestartPolicy(appName string) (string, error) {
+	dokkuRoot := os.Getenv("DOKKU_ROOT")
+	dockerOptionDeployPath := fmt.Sprintf("%v/%v/DOCKER_OPTIONS_DEPLOY", dokkuRoot, appName)
+	contentBytes, err := ioutil.ReadFile(dockerOptionDeployPath)
+	if err != nil {
+		log.ErrorLogger.Println("Read DOCKER_OPTIONS_DEPLOY failed:", err.Error())
+		return "", err
+	}
+	content := string(contentBytes)
+	regex := regexp.MustCompile("--restart=.+")
+	matches := regex.FindStringSubmatch(content)
+	if len(matches) < 1 {
+		return "", errors.New("Can't find restart policy")
+	}
+	regex = regexp.MustCompile("=.+")
+	matches = regex.FindStringSubmatch(matches[0])
+	if len(matches) < 1 {
+		return "", errors.New("Can't find restart policy")
+	}
+	result := strings.Replace(matches[0], "=", "", -1)
+	return result, nil
+}
+
+// SetRestartPolicy set app's restart policy
+func SetRestartPolicy(appName string, policyVal string) error {
+	dokkuRoot := os.Getenv("DOKKU_ROOT")
+	dockerOptionDeployPath := fmt.Sprintf("%v/%v/DOCKER_OPTIONS_DEPLOY", dokkuRoot, appName)
+	contentBytes, err := ioutil.ReadFile(dockerOptionDeployPath)
+	if err != nil {
+		log.ErrorLogger.Println("Read DOCKER_OPTIONS_DEPLOY failed:", err.Error())
+		return err
+	}
+	content := string(contentBytes)
+	regex := regexp.MustCompile("--restart=.+")
+	matches := regex.FindStringSubmatch(content)
+	if len(matches) < 1 {
+		return errors.New("Can't read restart policy")
+	}
+
+	newContent := strings.Replace(content, matches[0], policyVal, -1)
+	err = ioutil.WriteFile(dockerOptionDeployPath, []byte(newContent), 0644)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// GetValidPolicy provide valide policy value or empty string
+func GetValidPolicy(policyName string, allowFailureCount int) string {
+	if policyName == "on-failure" && allowFailureCount > 0 && allowFailureCount < 100 {
+		return fmt.Sprintf("--restart=%v:%v", policyName, allowFailureCount)
+	}
+
+	policies := []string{"no", "unless-stopped", "always"}
+	for _, policy := range policies {
+		if policy == policyName {
+			return fmt.Sprintf("--restart=%v", policy)
+		}
+	}
+	return ""
 }
