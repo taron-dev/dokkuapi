@@ -4,6 +4,7 @@ import (
 	"github.com/ondro2208/dokkuapi/contextimpl"
 	"github.com/ondro2208/dokkuapi/helper"
 	"github.com/ondro2208/dokkuapi/model"
+	"github.com/ondro2208/dokkuapi/plugins/ps"
 	"github.com/ondro2208/dokkuapi/service"
 	str "github.com/ondro2208/dokkuapi/store"
 	"net/http"
@@ -48,6 +49,20 @@ func AppEdit(w http.ResponseWriter, r *http.Request, store *str.Store) {
 		}
 	}
 
+	if editApp.RestartPolicy.Name != "" {
+		policyVal := ps.GetValidPolicy(editApp.RestartPolicy.Name, editApp.RestartPolicy.FailureLimit)
+		if policyVal == "" {
+			helper.RespondWithMessage(w, r, http.StatusBadRequest, "Invalid restart policy")
+			return
+		}
+
+		err = ps.SetRestartPolicy(app.Name, policyVal)
+		if err != nil {
+			helper.RespondWithMessage(w, r, http.StatusInternalServerError, "Can't edit restart policy")
+			return
+		}
+	}
+
 	editedApp := findApp(usersService, user.Id.Hex(), app.Id.Hex())
 	if editedApp == nil {
 		helper.RespondWithData(w, r, http.StatusCreated, editApp)
@@ -57,7 +72,13 @@ func AppEdit(w http.ResponseWriter, r *http.Request, store *str.Store) {
 }
 
 type putApp struct {
-	Name string `json:"appName,omitempty"`
+	Name          string        `json:"appName,omitempty"`
+	RestartPolicy restartPolicy `json:"restartPolicy,omitempty"`
+}
+
+type restartPolicy struct {
+	Name         string `json:"restartPolicyName,omitempty"`
+	FailureLimit int    `json:"failureLimit,omitempty"`
 }
 
 func findApp(us service.UsersService, userIDHex string, appIDHex string) *model.Application {

@@ -44,15 +44,22 @@ func AppsGet(w http.ResponseWriter, r *http.Request, store *str.Store) {
 		if instances := common.GetAppInstances(app.Name); instances >= 0 {
 			userApp.Instances = instances
 		}
+
+		// 5. read DOCKER_OPTIONS_DEPLOY file for each app
+		if restartPolicy, err := ps.GetRestartPolicy(app.Name); err == nil {
+			userApp.RestartPolicy = restartPolicy
+		}
+
 		userApps = append(userApps, *userApp)
 	}
 	helper.RespondWithData(w, r, http.StatusOK, userApps)
 }
 
 type getApp struct {
-	ID        string   `json:"appId"`
-	Name      string   `json:"appName"`
-	URLs      []string `json:"urls"`
-	Status    string   `json:"status"`
-	Instances int      `json:"instances"`
+	ID            string   `json:"appId"`
+	Name          string   `json:"appName"`
+	URLs          []string `json:"urls"`
+	Status        string   `json:"status"`
+	Instances     int      `json:"instances"`
+	RestartPolicy string   `json:"restartPolicy"`
 }
