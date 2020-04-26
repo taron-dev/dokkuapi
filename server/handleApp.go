@@ -58,3 +58,15 @@ func (s *Server) getAppFailedLogs() http.HandlerFunc {
 		handlers.AppFailedLogs(w, r)
 	}
 }
+
+func (s *Server) putAppRestart() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		handlers.AppRestart(w, r)
+	}
+}
+
+func (s *Server) putAppRebuild() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		handlers.AppRebuild(w, r)
+	}
+}
