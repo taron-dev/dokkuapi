@@ -2,6 +2,7 @@ package ps
 
 import (
 	"fmt"
+	"github.com/dokku/dokku/plugins/apps"
 	"github.com/dokku/dokku/plugins/common"
 	log "github.com/ondro2208/dokkuapi/logger"
 	"os/exec"
@@ -40,6 +41,11 @@ func Scale(appName string, webCount int, workerCount int) error {
 func GetAppStatus(appName string) string {
 	if !common.IsDeployed(appName) {
 		return "NOT DEPLOYED"
+	}
+
+	err := apps.CommandLocked([]string{appName})
+	if err == nil {
+		return "BUILDING"
 	}
 
 	containerIDs, err := common.GetAppContainerIDs(appName, "")
