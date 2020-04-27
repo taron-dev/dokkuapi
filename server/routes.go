@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/gorilla/mux"
+	"net/http"
 )
 
 func (s *Server) initRoutes() {
@@ -35,6 +36,9 @@ func (s *Server) initRoutes() {
 	router.Handle("/apps/{appId}/services", s.isAuthenticated(s.isUserAuthorizedApp(s.postAppServices()))).Methods("POST")
 	router.Handle("/apps/{appId}/services", s.isAuthenticated(s.isUserAuthorizedApp(s.getAppServices()))).Methods("GET")
 	router.Handle("/apps/{appId}/services/{serviceId}", s.isAuthenticated(s.isUserAuthorizedApp(s.deleteAppService()))).Methods("DELETE")
+
+	fs := http.FileServer(http.Dir("/home/dokku/.dokkuapi/swaggerui/"))
+	router.PathPrefix("/swaggerui/").Handler(http.StripPrefix("/swaggerui/", fs))
 
 	s.router = router
 }
