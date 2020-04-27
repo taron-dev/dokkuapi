@@ -30,7 +30,7 @@ func AppEdit(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	editApp := new(putApp)
 	err = helper.Decode(w, r, editApp)
 	if err != nil {
-		helper.RespondWithMessage(w, r, http.StatusUnprocessableEntity, "Unable to parse request body")
+		helper.RespondWithMessage(w, r, http.StatusBadRequest, "Unable to parse request body")
 		return
 	}
 	if editApp.Name != "" {
@@ -52,7 +52,7 @@ func AppEdit(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	if editApp.RestartPolicy.Name != "" {
 		policyVal := ps.GetValidPolicy(editApp.RestartPolicy.Name, editApp.RestartPolicy.FailureLimit)
 		if policyVal == "" {
-			helper.RespondWithMessage(w, r, http.StatusBadRequest, "Invalid restart policy")
+			helper.RespondWithMessage(w, r, http.StatusUnprocessableEntity, "Invalid restart policy")
 			return
 		}
 

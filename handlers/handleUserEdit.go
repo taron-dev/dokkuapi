@@ -36,7 +36,7 @@ func UserEdit(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	body := new(editUserBody)
 	err = helper.Decode(w, r, body)
 	if err != nil {
-		helper.RespondWithMessage(w, r, http.StatusUnprocessableEntity, "Unable to parse request body")
+		helper.RespondWithMessage(w, r, http.StatusBadRequest, "Unable to parse request body")
 		return
 	}
 	// validate ssh public key
@@ -59,7 +59,7 @@ func UserEdit(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	}
 	if !hasSSHKey {
 		if !ssh.AddSSHPublicKey(user.Username, body.SSHPublicKey) {
-			helper.RespondWithMessage(w, r, http.StatusBadRequest, "Can't add ssh public key")
+			helper.RespondWithMessage(w, r, http.StatusInternalServerError, "Can't add ssh public key")
 			return
 		}
 	}
@@ -80,5 +80,5 @@ func UserEdit(w http.ResponseWriter, r *http.Request, store *str.Store) {
 }
 
 type editUserBody struct {
-	SSHPublicKey string `json="sshPublicKey"`
+	SSHPublicKey string `json:"sshPublicKey"`
 }

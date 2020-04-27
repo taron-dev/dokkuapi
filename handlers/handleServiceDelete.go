@@ -28,7 +28,7 @@ func ServiceDelete(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	serviceIDParam, present := mux.Vars(r)["serviceId"]
 	if !present || len(serviceIDParam) < 1 {
 		log.ErrorLogger.Println("Extracting appId from url was unsuccessful")
-		helper.RespondWithMessage(w, r, http.StatusBadRequest, "Unknown service id")
+		helper.RespondWithMessage(w, r, http.StatusNotFound, "Unknown service id")
 		return
 	}
 

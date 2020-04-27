@@ -28,7 +28,7 @@ func ServiceCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	var servicePost postService
 	err = helper.Decode(w, r, &servicePost)
 	if err != nil {
-		helper.RespondWithMessage(w, r, http.StatusUnprocessableEntity, "Unable to parse request body")
+		helper.RespondWithMessage(w, r, http.StatusBadRequest, "Unable to parse request body")
 		return
 	}
 

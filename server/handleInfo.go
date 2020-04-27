@@ -1,18 +1,12 @@
 package server
 
 import (
-	"encoding/json"
-	log "github.com/ondro2208/dokkuapi/logger"
+	"github.com/ondro2208/dokkuapi/helper"
 	"net/http"
 )
 
 func (s *Server) getInfo() http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
-		response.Header().Set("content-type", "application/json")
-		jsonData, err := json.Marshal(map[string]string{"message": "temporary info endpoint"})
-		if err != nil {
-			log.ErrorLogger.Fatal(err)
-		}
-		response.Write(jsonData)
+		helper.RespondWithMessage(response, request, http.StatusOK, "temporary info endpoint")
 	}
 }

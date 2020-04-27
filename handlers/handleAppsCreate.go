@@ -22,7 +22,7 @@ func AppsCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	var appPost postApp
 	err = helper.Decode(w, r, &appPost)
 	if err != nil {
-		helper.RespondWithMessage(w, r, http.StatusUnprocessableEntity, "Unable to parse request body")
+		helper.RespondWithMessage(w, r, http.StatusBadRequest, "Unable to parse request body")
 		return
 	}
 	appName := appPost.Name
