@@ -32,7 +32,7 @@ func UserRegister(w http.ResponseWriter, r *http.Request, store *str.Store) {
 		return
 	}
 
-	if !ssh.AddSSHPublicKey(user.Username, body.SSHPublicKey) {
+	if body.SSHPublicKey != "" && !ssh.AddSSHPublicKey(user.Username, body.SSHPublicKey) {
 		usersService.DeleteExistingUser(user.Id.Hex())
 		helper.RespondWithMessage(w, r, http.StatusUnprocessableEntity, "Can't add ssh public key")
 		return

@@ -138,7 +138,7 @@ func (us *UsersServiceContext) UpdateUserWithApplication(appName string, userId 
 	log.GeneralLogger.Println("Result after updating database ", result)
 	if err != nil {
 		log.ErrorLogger.Println(err)
-		return nil, http.StatusUnprocessableEntity, "Unable to store application"
+		return nil, http.StatusInternalServerError, "Unable to store application"
 	}
 
 	if result.MatchedCount == 0 {

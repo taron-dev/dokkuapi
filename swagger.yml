@@ -1,0 +1,761 @@
+---
+swagger: "2.0"
+info:
+  description: RESTful API for lightweight PaaS http://dokku.viewdocs.io/dokku/
+  version: 1.0.0
+  title: Dokku API
+  contact:
+    email: ondrej.tarasovic@student.tuke.sk
+host: virtserver.swaggerhub.com
+basePath: /ondro2208/dokkuapi/1.0.0
+tags:
+- name: user
+  description: User calls
+- name: app
+  description: Baisc calls to apps
+- name: app action
+  description: Requests which provide action over app
+- name: app instances
+  description: Requests related to app's instances
+- name: app services
+  description: Requests related to app's backing services
+schemes:
+- https
+paths:
+  /info:
+    get:
+      summary: temporary info endpoint
+      description: temporary info endpoint
+      operationId: info
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        "200":
+          description: show message
+          schema:
+            $ref: '#/definitions/ResponseWithMessage'
+      security:
+      - JWT: []
+  /register:
+    post:
+      tags:
+      - user
+      summary: register user in our api
+      operationId: register
+      parameters:
+      - in: body
+        name: user data
+        description: ssh public key
+        required: false
+        schema:
+          $ref: '#/definitions/user data'
+      responses:
+        "201":
+          description: return user's info
+          headers:
+            Authorization:
+              type: string
+              description: Bearer jwt
+        "409":
+          description: user already registered
+        "422":
+          description: invalid ssh public key
+        "500":
+          description: something went wrong in service itself
+      security:
+      - ACCESS_TOKEN: []
+  /login:
+    post:
+      tags:
+      - user
+      summary: login user to our api
+      operationId: login
+      parameters: []
+      responses:
+        "201":
+          description: return user's info
+          headers:
+            Authorization:
+              type: string
+              description: Bearer jwt
+        "404":
+          description: User doesn't exist
+        "500":
+          description: something went wrong in service itself
+      security:
+      - ACCESS_TOKEN: []
+  /logout:
+    post:
+      tags:
+      - user
+      summary: logout user
+      operationId: logout
+      parameters: []
+      responses:
+        "201":
+          description: blacklisted JWT
+        "401":
+          description: Invalid JWT
+      security:
+      - ACCESS_TOKEN: []
+  /users/{userId}:
+    put:
+      tags:
+      - user
+      summary: edit user
+      description: Edit user's data
+      parameters:
+      - name: userId
+        in: path
+        description: ID of user to be edited
+        required: true
+        type: string
+      responses:
+        "201":
+          description: User successfully updated
+        "400":
+          description: Unable to parse request's data
+        "401":
+          description: Unauthorized access
+        "422":
+          description: Invalid request's data, f.e. ssh public key
+        "500":
+          description: something went wrong in service itself
+      security:
+      - JWT: []
+    delete:
+      tags:
+      - user
+      summary: delete user
+      parameters:
+      - name: userId
+        in: path
+        description: ID of user to be deleted
+        required: true
+        type: string
+      responses:
+        "202":
+          description: User successfully deleted
+        "400":
+          description: User has undeleted apps or services
+        "401":
+          description: Unauthorized access
+        "500":
+          description: something went wrong in service itself
+      security:
+      - JWT: []
+  /apps:
+    get:
+      tags:
+      - app
+      summary: apps list
+      description: provides apps list for cuurent user
+      parameters: []
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/GetApp'
+        "401":
+          description: Unauthorized access
+        "500":
+          description: something went wrong in service itself
+      security:
+      - JWT: []
+    post:
+      tags:
+      - app
+      summary: creat app
+      description: Creates new apps
+      parameters:
+      - in: body
+        name: app data
+        description: app data
+        required: false
+        schema:
+          $ref: '#/definitions/app data'
+      responses:
+        "201":
+          description: App created successfully
+        "400":
+          description: Unable to parse request's data
+        "401":
+          description: Unauthorized access
+        "422":
+          description: Invalid request's data f.e. appName
+        "500":
+          description: something went wrong in service itself
+      security:
+      - JWT: []
+  /apps/{appId}:
+    put:
+      tags:
+      - app
+      summary: edit app
+      description: Edit app
+      parameters:
+      - name: appId
+        in: path
+        description: ID of app to be edited
+        required: true
+        type: string
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/body'
+      responses:
+        "201":
+          description: App updated successfully
+        "400":
+          description: Unable to parse request's data
+        "401":
+          description: Unauthorized access
+        "422":
+          description: Invalid request's data f.e. restar policy
+        "500":
+          description: something went wrong in service itself
+      security:
+      - JWT: []
+    delete:
+      tags:
+      - app
+      summary: delete app
+      description: Delete app
+      parameters:
+      - name: appId
+        in: path
+        description: ID of app to be deleted
+        required: true
+        type: string
+      responses:
+        "202":
+          description: App successfully deleted
+        "401":
+          description: Unauthorized access
+        "404":
+          description: Not found service linked to app, which should be deleted
+        "422":
+          description: Can't delete app
+        "500":
+          description: something went wrong in service itself
+      security:
+      - JWT: []
+  /apps/{appId}/logs:
+    get:
+      tags:
+      - app
+      summary: app logs
+      description: Provides logs for application
+      parameters:
+      - name: appId
+        in: path
+        description: ID of app to retrieve logs for
+        required: true
+        type: string
+      - name: linesNum
+        in: query
+        description: Number of returned lines
+        required: false
+        type: integer
+      - name: process
+        in: query
+        description: Filter logs for specific process
+        required: false
+        type: string
+      - name: quiet
+        in: query
+        description: Define if return raw logs without colors, time and names
+        required: false
+        type: boolean
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/inline_response_200'
+        "401":
+          description: Unauthorized access
+        "500":
+          description: something went wrong in service itself
+      security:
+      - JWT: []
+  /apps/{appId}/logs-failed:
+    get:
+      tags:
+      - app
+      summary: app failed logs
+      description: Provides app's logs for last failed build
+      parameters:
+      - name: appId
+        in: path
+        description: ID of app to retrieve logs for
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/inline_response_200_1'
+        "401":
+          description: Unauthorized access
+        "500":
+          description: something went wrong in service itself
+      security:
+      - JWT: []
+  /apps/{appId}/stop:
+    put:
+      tags:
+      - app action
+      summary: stop app
+      description: Action to stop running app
+      parameters:
+      - name: appId
+        in: path
+        required: true
+        type: string
+      responses:
+        "201":
+          description: OK
+          schema:
+            $ref: '#/definitions/inline_response_201'
+        "401":
+          description: Unauthorized access
+        "500":
+          description: something went wrong in service itself
+      security:
+      - JWT: []
+  /apps/{appId}/start:
+    put:
+      tags:
+      - app action
+      summary: start app
+      description: Action to start stopped app
+      parameters:
+      - name: appId
+        in: path
+        required: true
+        type: string
+      responses:
+        "201":
+          description: OK
+          schema:
+            $ref: '#/definitions/inline_response_201_1'
+        "401":
+          description: Unauthorized access
+        "500":
+          description: something went wrong in service itself
+      security:
+      - JWT: []
+  /apps/{appId}/restart:
+    put:
+      tags:
+      - app action
+      summary: restart app
+      description: Action to restart running app
+      parameters:
+      - name: appId
+        in: path
+        required: true
+        type: string
+      responses:
+        "201":
+          description: OK
+          schema:
+            $ref: '#/definitions/inline_response_201_2'
+        "401":
+          description: Unauthorized access
+        "500":
+          description: something went wrong in service itself
+      security:
+      - JWT: []
+  /apps/{appId}/rebuild:
+    put:
+      tags:
+      - app action
+      summary: rebuild app
+      description: Action to rebuild app
+      parameters:
+      - name: appId
+        in: path
+        required: true
+        type: string
+      responses:
+        "201":
+          description: OK
+          schema:
+            $ref: '#/definitions/inline_response_201_3'
+        "401":
+          description: Unauthorized access
+        "500":
+          description: something went wrong in service itself
+      security:
+      - JWT: []
+  /apps/{appId}/deploy:
+    put:
+      tags:
+      - app action
+      summary: deploy app
+      description: Action to deploy app via tar file
+      consumes:
+      - multipart/form-data
+      parameters:
+      - name: appId
+        in: path
+        required: true
+        type: string
+      - name: app_source_code
+        in: formData
+        description: .tar file to upload
+        required: false
+        type: file
+      responses:
+        "201":
+          description: OK
+          schema:
+            $ref: '#/definitions/inline_response_201_4'
+        "401":
+          description: Unauthorized access
+        "422":
+          description: Invalid or somehow bad file
+        "500":
+          description: Something went wrong in service itself
+      security:
+      - JWT: []
+  /apps/{appId}/instances:
+    get:
+      tags:
+      - app instances
+      summary: app's instances list
+      description: provides app's instances list
+      parameters:
+      - name: appId
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/GetInstance'
+        "401":
+          description: Unauthorized access
+        "500":
+          description: something went wrong in service itself
+      security:
+      - JWT: []
+    put:
+      tags:
+      - app instances
+      summary: update app's instances
+      description: Update number of app's instances
+      parameters:
+      - name: appId
+        in: path
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: instance data
+        required: false
+        schema:
+          $ref: '#/definitions/body_1'
+      responses:
+        "201":
+          description: Instance created successfully
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/GetInstance'
+        "400":
+          description: Unable to parse request's data
+        "401":
+          description: Unauthorized access
+        "422":
+          description: Invalid request's data f.e. negative number in webCount
+        "500":
+          description: something went wrong in service itself
+      security:
+      - JWT: []
+  /apps/{appId}/services:
+    get:
+      tags:
+      - app services
+      summary: app's services list
+      description: provides app's services list
+      parameters:
+      - name: appId
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/GetService'
+        "401":
+          description: Unauthorized access
+        "500":
+          description: something went wrong in service itself
+      security:
+      - JWT: []
+    post:
+      tags:
+      - app services
+      summary: add service
+      description: add backing service to app
+      parameters:
+      - name: appId
+        in: path
+        required: true
+        type: string
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/CreateService'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/GetService'
+        "400":
+          description: Unable to parse request's data
+        "401":
+          description: Unauthorized access
+        "422":
+          description: Invalid request's data f.e. service name
+        "500":
+          description: something went wrong in service itself
+      security:
+      - JWT: []
+  /apps/{appId}/services/{serviceId}:
+    delete:
+      tags:
+      - app services
+      summary: delete service
+      description: delete backing service from app
+      parameters:
+      - name: appId
+        in: path
+        required: true
+        type: string
+      - name: serviceId
+        in: path
+        required: true
+        type: string
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/CreateService'
+      responses:
+        "202":
+          description: OK
+          schema:
+            $ref: '#/definitions/inline_response_202'
+        "401":
+          description: Unauthorized access
+        "404":
+          description: Not found service
+        "500":
+          description: something went wrong in service itself
+      security:
+      - JWT: []
+securityDefinitions:
+  JWT:
+    type: apiKey
+    name: Authorization
+    in: header
+  ACCESS_TOKEN:
+    type: apiKey
+    name: Authorization
+    in: header
+definitions:
+  ResponseWithMessage:
+    required:
+    - message
+    properties:
+      message:
+        type: string
+        example: temporary info endpoint
+  GetApp:
+    required:
+    - appId
+    - appName
+    - instances
+    - restartPolicy
+    - status
+    - urls
+    properties:
+      appId:
+        type: string
+        example: 5e9a19d47e9c4fb52775
+      appName:
+        type: string
+        example: awsome-app
+      urls:
+        type: array
+        items:
+          type: string
+          example: http://awsome-app.dokku.com
+      status:
+        type: string
+        example: DEPLOYED
+        enum:
+        - NOT DEPLOYED
+        - DEPLOYED
+        - BUILDING
+        - STOPPED
+      instances:
+        type: integer
+        example: 1
+      restartPolicy:
+        type: string
+        example: always
+  GetInstance:
+    required:
+    - instanceName
+    - status
+    - type
+    properties:
+      instanceName:
+        type: string
+        example: awsome-app.web.1
+      type:
+        type: string
+        example: web
+      status:
+        type: string
+        example: running
+        enum:
+        - created
+        - restarting
+        - running
+        - removing
+        - paused
+        - exited
+        - dead
+  GetService:
+    required:
+    - serviceId
+    - serviceName
+    - serviceType
+    properties:
+      serviceId:
+        type: string
+        example: awsome-app.web.1
+      serviceName:
+        type: string
+        example: awsome-app-db
+      serviceType:
+        type: string
+        example: postgres
+        enum:
+        - postgres
+  CreateService:
+    required:
+    - serviceName
+    - serviceType
+    properties:
+      serviceName:
+        type: string
+        example: awsome-app-db
+      serviceType:
+        type: string
+        example: postgres
+        enum:
+        - postgres
+      serviceVersion:
+        type: string
+        example: "11.6"
+  user data:
+    type: object
+    properties:
+      sshPublicKey:
+        type: string
+  app data:
+    type: object
+    properties:
+      appName:
+        type: string
+  appsappId_restartPolicy:
+    type: object
+    properties:
+      restartPolicyName:
+        type: string
+      failureLimit:
+        type: integer
+  body:
+    type: object
+    properties:
+      appName:
+        type: string
+      restartPolicy:
+        $ref: '#/definitions/appsappId_restartPolicy'
+  inline_response_200:
+    type: object
+    properties:
+      logs:
+        type: string
+        example: |-
+          [36m2020-04-15T18:01:51.548033100Z app[web.1]:[0m [10] ! WARNING: Detected 1 Thread(s) started in app boot:
+          [36m2020-04-15T18:01:51.548037693Z app[web.1]:[0m [10] ! #<Thread:0x000055a070b9e1f8@/app/vendor/bundle/ruby/2.4.0/gems/activerecord-5.2.3/lib/active_record/connection_adapters/abstract/connection_pool.rb:299 sleep> - /app/vendor/bundle/ruby/2.4.0/gems/activerecord-5.2.3/lib/active_record/connection_adapters/abstract/connection_pool.rb:301:in `sleep'
+          [36m2020-04-15T18:01:51.548044491Z app[web.1]:[0m [10] Use Ctrl-C to stop
+          [36m2020-04-15T18:01:51.580061904Z app[web.1]:[0m [10] - Worker 0 (pid: 156) booted, phase: 0
+          [36m2020-04-15T18:01:51.580088136Z app[web.1]:[0m [10] - Worker 1 (pid: 158) booted, phase: 0
+  inline_response_200_1:
+    type: object
+    properties:
+      failedLogs:
+        type: string
+        example: |
+          =====> ruby-getting-started failed deploy logs
+           !     No failed containers found
+  inline_response_201:
+    type: object
+    properties:
+      message:
+        type: string
+        example: App stopped successfully
+  inline_response_201_1:
+    type: object
+    properties:
+      message:
+        type: string
+        example: App started successfully
+  inline_response_201_2:
+    type: object
+    properties:
+      message:
+        type: string
+        example: App restarted successfully
+  inline_response_201_3:
+    type: object
+    properties:
+      message:
+        type: string
+        example: App rebuilt successfully
+  inline_response_201_4:
+    type: object
+    properties:
+      message:
+        type: string
+        example: Successfully deployed
+  body_1:
+    type: object
+    properties:
+      webCount:
+        type: integer
+  inline_response_202:
+    type: object
+    properties:
+      message:
+        type: string
+        example: Service deleted

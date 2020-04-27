@@ -31,7 +31,7 @@ func InstancesPut(w http.ResponseWriter, r *http.Request) {
 	// Validate negative number
 	if (putInstancesBody.WebCount < 0) || (putInstancesBody.WorkerCount < 0) || (putInstancesBody.WebCount < 1 && putInstancesBody.WorkerCount < 1) {
 		log.ErrorLogger.Println("Wrong request's body:", putInstancesBody)
-		helper.RespondWithMessage(w, r, http.StatusBadRequest, "Wrong request's body")
+		helper.RespondWithMessage(w, r, http.StatusUnprocessableEntity, "Invalid count number")
 		return
 	}
 
@@ -60,6 +60,6 @@ func InstancesPut(w http.ResponseWriter, r *http.Request) {
 }
 
 type putInstances struct {
-	WebCount    int `json="webCount"`
-	WorkerCount int `json="workerCount"`
+	WebCount    int `json:"webCount"`
+	WorkerCount int `json:"workerCount"`
 }
