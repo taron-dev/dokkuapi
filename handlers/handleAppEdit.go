@@ -56,7 +56,11 @@ func AppEdit(w http.ResponseWriter, r *http.Request, store *str.Store) {
 			return
 		}
 
-		err = ps.SetRestartPolicy(app.Name, policyVal)
+		appName := app.Name
+		if editApp.Name != "" {
+			appName = editApp.Name
+		}
+		err = ps.SetRestartPolicy(appName, policyVal)
 		if err != nil {
 			helper.RespondWithMessage(w, r, http.StatusInternalServerError, "Can't edit restart policy")
 			return

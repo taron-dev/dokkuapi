@@ -38,7 +38,7 @@ func ServiceCreate(w http.ResponseWriter, r *http.Request, store *str.Store) {
 	case "postgres":
 		{
 			if serviceAlreadyExists := postgres.ServiceExists(servicePost.Name); serviceAlreadyExists {
-				helper.RespondWithMessage(w, r, http.StatusUnprocessableEntity, "Wrong app name")
+				helper.RespondWithMessage(w, r, http.StatusUnprocessableEntity, "Wrong service name")
 				return
 			}
 			ok, out := postgres.CreateService(servicePost.Name)
