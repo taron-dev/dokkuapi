@@ -571,6 +571,43 @@
         } ]
       }
     },
+    "/apps/{appId}/run" : {
+      "put" : {
+        "tags" : [ "app action" ],
+        "summary" : "run command",
+        "description" : "run command for app",
+        "parameters" : [ {
+          "name" : "appId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/body_1"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/inline_response_201_5"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized access"
+          },
+          "500" : {
+            "description" : "something went wrong in service itself"
+          }
+        },
+        "security" : [ {
+          "JWT" : [ ]
+        } ]
+      }
+    },
     "/apps/{appId}/instances" : {
       "get" : {
         "tags" : [ "app instances" ],
@@ -618,7 +655,7 @@
           "description" : "instance data",
           "required" : false,
           "schema" : {
-            "$ref" : "#/definitions/body_1"
+            "$ref" : "#/definitions/body_2"
           }
         } ],
         "responses" : {
@@ -980,6 +1017,27 @@
       }
     },
     "body_1" : {
+      "type" : "object",
+      "properties" : {
+        "dokkuRun" : {
+          "type" : "string",
+          "example" : "rails db:migrate"
+        }
+      }
+    },
+    "inline_response_201_5" : {
+      "type" : "object",
+      "properties" : {
+        "message" : {
+          "type" : "string",
+          "example" : "Command executed successfully"
+        },
+        "output" : {
+          "type" : "string"
+        }
+      }
+    },
+    "body_2" : {
       "type" : "object",
       "properties" : {
         "webCount" : {

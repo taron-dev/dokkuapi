@@ -29,6 +29,7 @@ func (s *Server) initRoutes() {
 	router.Handle("/apps/{appId}/start", s.isAuthenticated(s.isUserAuthorizedApp(s.putAppStart()))).Methods("PUT")
 	router.Handle("/apps/{appId}/restart", s.isAuthenticated(s.isUserAuthorizedApp(s.putAppRestart()))).Methods("PUT")
 	router.Handle("/apps/{appId}/rebuild", s.isAuthenticated(s.isUserAuthorizedApp(s.putAppRebuild()))).Methods("PUT")
+	router.Handle("/apps/{appId}/run", s.isAuthenticated(s.isUserAuthorizedApp(s.putAppRun()))).Methods("PUT")
 
 	router.Handle("/apps/{appId}/instances", s.isAuthenticated(s.isUserAuthorizedApp(s.getAppInstances()))).Methods("GET")
 	router.Handle("/apps/{appId}/instances", s.isAuthenticated(s.isUserAuthorizedApp(s.putAppInstances()))).Methods("PUT")
