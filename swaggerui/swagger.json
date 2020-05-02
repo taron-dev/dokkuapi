@@ -808,11 +808,13 @@
   },
   "securityDefinitions" : {
     "JWT" : {
+      "description" : "Retrieved jwt from /register or /login endpoint and added as Bearer token into header",
       "type" : "apiKey",
       "name" : "Authorization",
       "in" : "header"
     },
     "ACCESS_TOKEN" : {
+      "description" : "Retrieved access_token from Github Oauth and added as Bearer token into header",
       "type" : "apiKey",
       "name" : "Authorization",
       "in" : "header"
