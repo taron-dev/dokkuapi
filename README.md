@@ -1,5 +1,9 @@
 # dokkuapi
-RESTful API for Dokku exposed locally on port `:3000` or on server http://api.taron.sk.
+RESTful API for Dokku exposed locally on port `:3000`.
+
+## Dependencies
+* Go
+* MongoDB
 
 ## Setup
 Build from root of the repository: `go build -o dokkuapi main.go` or for linux deployment `GOOS=linux GOARCH=amd64 go build`\
@@ -11,6 +15,7 @@ Don't forget to set all necessary environmental variables. You can run it locall
 * DB_USERNAME
 * DB_PWD
 * JWT_TOKEN_SECRET
+* ...
 
 ## Endpoints
 |Path|Method|Description|
