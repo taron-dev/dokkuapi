@@ -2,12 +2,13 @@ package authentication
 
 import (
 	"errors"
-	jwt "github.com/dgrijalva/jwt-go"
-	log "github.com/ondro2208/dokkuapi/logger"
 	"net/http"
 	"os"
 	"strings"
 	"time"
+
+	jwt "github.com/golang-jwt/jwt/v5"
+	log "github.com/ondro2208/dokkuapi/logger"
 )
 
 var mySigningKey = []byte(os.Getenv("JWT_TOKEN_SECRET"))

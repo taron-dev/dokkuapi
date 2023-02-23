@@ -3,11 +3,12 @@ package contextimpl
 import (
 	"context"
 	"errors"
-	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/ondro2208/dokkuapi/model"
 	"net/http"
 	"os"
 	"strings"
+
+	jwt "github.com/golang-jwt/jwt/v5"
+	"github.com/ondro2208/dokkuapi/model"
 )
 
 type key int

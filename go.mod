@@ -3,8 +3,8 @@ module github.com/ondro2208/dokkuapi
 go 1.19
 
 require (
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dokku/dokku v0.20.0
+	github.com/golang-jwt/jwt/v5 v5.0.0-rc.1
 	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.7.4
 	go.mongodb.org/mongo-driver v1.5.1
